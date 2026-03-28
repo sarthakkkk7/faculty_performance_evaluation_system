@@ -1,4 +1,4 @@
-# 📊 Faculty Performance Evaluation System v3.0
+# 📊 Faculty Performance Evaluation System 
 ### Complete Beginner's Setup Guide
 
 ---
@@ -126,9 +126,9 @@ Go to: **http://localhost:5000**
 ## 🔑 Login Credentials
 
 ### Demo Users (created automatically):
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | `admin` | `admin123` |
+| Role    | Username   | Password |
+|------   |----------  |----------|
+| Admin   | `admin`    | `admin123` |
 | Faculty | `faculty1` | `faculty123` |
 
 ---
@@ -261,5 +261,6 @@ Go to: **http://localhost:5000**
 ## 📬 Contact & Support
 This is a project built with Flask + Supabase + Machine Learning.
 For questions, check the code comments or the troubleshooting section above.
-#   f a c u l t y _ p e r f o r m a n c e _ e v a l u a t i o n _ s y s t e m  
+#   f a c u l t y _ p e r f o r m a n c e _ e v a l u a t i o n _ s y s t e m 
+ 
  
