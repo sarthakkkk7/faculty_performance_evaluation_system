@@ -1,0 +1,68 @@
+{
+  "model_type": "Random Forest Classifier",
+  "algorithm": "sklearn.ensemble.RandomForestClassifier",
+  "accuracy": 0.9286,
+  "n_estimators": 200,
+  "max_depth": 15,
+  "min_samples_split": 5,
+  "min_samples_leaf": 2,
+  "classes": [
+    "Average",
+    "Good",
+    "Needs Improvement"
+  ],
+  "n_classes": 3,
+  "feature_names": [
+    "Publications",
+    "Citations",
+    "Projects_Completed",
+    "Students_Mentored",
+    "Teaching_Rating",
+    "Research_Score",
+    "Administration_Score",
+    "Teaching_Hours",
+    "Student_Feedback",
+    "Experience_Years"
+  ],
+  "n_features": 10,
+  "feature_importance": {
+    "Students_Mentored": 0.2126,
+    "Publications": 0.1683,
+    "Citations": 0.1664,
+    "Research_Score": 0.1177,
+    "Administration_Score": 0.1145,
+    "Student_Feedback": 0.0749,
+    "Teaching_Rating": 0.0528,
+    "Teaching_Hours": 0.0503,
+    "Experience_Years": 0.0234,
+    "Projects_Completed": 0.0191
+  },
+  "created_at": "2026-02-28T19:50:57.447065",
+  "dataset": "faculty_performance_complete_v2.csv",
+  "scaler_params": {
+    "mean": [
+      3.607142857142857,
+      32.964285714285715,
+      2.4642857142857144,
+      17.642857142857142,
+      3.024464285714285,
+      3.0564285714285715,
+      2.9473214285714278,
+      16.214285714285715,
+      2.910892857142857,
+      16.625
+    ],
+    "scale": [
+      2.677142475987166,
+      17.7280692342824,
+      1.7623471130679034,
+      7.899883750113422,
+      0.4283436522685675,
+      0.47632307677603414,
+      0.5858433818967701,
+      2.8329331450074196,
+      0.41289602974302264,
+      7.696387139431072
+    ]
+  }
+}

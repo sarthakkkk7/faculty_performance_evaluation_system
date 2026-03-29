@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Performance System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: min(420px, 94vw);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header-icon {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a2332;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-top: 4px;
+    }
+
+    .demo-box {
+      background: #f0f6ff;
+      border: 1px solid #c7deff;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #4a5568;
+      margin-bottom: 20px;
+      line-height: 1.9;
+    }
+
+    .demo-box strong {
+      color: #1a56db;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .demo-box code {
+      background: #e0ecff;
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #1a3c6e;
+    }
+
+    .alert {
+      padding: 10px 13px;
+      border-radius: 7px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+    }
+
+    .alert.error {
+      background: #fff0f0;
+      border: 1px solid #ffc7c7;
+      color: #c0392b;
+    }
+
+    .alert.success {
+      background: #f0fff8;
+      border: 1px solid #b2f0d4;
+      color: #1a7a4a;
+    }
+
+    .alert.warn {
+      background: #fffbea;
+      border: 1px solid #fde68a;
+      color: #92600a;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: #1a2332;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus {
+      border-color: #1a56db;
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+    }
+
+    .field input::placeholder {
+      color: #a0aab4;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.18s;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      background: #1a56db;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1446b8;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: #4a5568;
+      border: 1.5px solid #dde3ea;
+      margin-top: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: #f7faff;
+      border-color: #b0c4de;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #edf0f4;
+      margin: 18px 0;
+    }
+
+    .switch-link {
+      text-align: center;
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-top: 14px;
+    }
+
+    .switch-link a {
+      color: #1a56db;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .switch-link a:hover {
+      text-decoration: underline;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1a2332;
+      margin-bottom: 3px;
+    }
+
+    .panel-sub {
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .role-pills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .pill {
+      padding: 9px;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      background: #fff;
+      color: #6b7a8d;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.18s;
+      text-align: center;
+    }
+
+    .pill.active {
+      border-color: #1a56db;
+      color: #1a56db;
+      background: #f0f6ff;
+    }
+
+    .pill:hover {
+      border-color: #1a56db;
+      color: #1a56db;
+    }
+
+    .pw-strength {
+      height: 3px;
+      border-radius: 2px;
+      margin-top: 5px;
+      background: #edf0f4;
+      overflow: hidden;
+    }
+
+    .pw-bar {
+      height: 100%;
+      border-radius: 2px;
+      width: 0;
+      transition: all 0.3s;
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 16px 0;
+    }
+
+    .otp-box {
+      width: 44px;
+      height: 50px;
+      background: #fff;
+      border: 1.5px solid #dde3ea;
+      border-radius: 8px;
+      color: #1a2332;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.18s;
+    }
+
+    .otp-box:focus {
+      border-color: #1a56db;
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 12px;
+      color: #6b7a8d;
+      margin-top: 4px;
+    }
+
+    .timer span {
+      color: #d97706;
+      font-weight: 600;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+
+    <!-- LOGIN -->
+    <div class="panel active" id="panelLogin">
+      <div class="header">
+        <span class="header-icon">🎓</span>
+        <h1>Faculty Performance System</h1>
+        <p>Sign in to your account</p>
+      </div>
+      <div class="demo-box">
+        <strong>Demo Credentials</strong>
+        Admin: <code>admin</code> / <code>admin123</code> &nbsp;·&nbsp;
+        Faculty: <code>faculty1</code> / <code>faculty123</code>
+      </div>
+      <div class="alert" id="loginAlert"></div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()" id="loginBtn">Sign In</button>
+      <hr class="divider">
+      <div class="switch-link">Don't have an account? <a onclick="showPanel('panelRegister')">Register here</a></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="panel" id="panelRegister">
+      <div class="panel-title">Create Account</div>
+      <div class="panel-sub">Fill in your details to get started</div>
+      <div class="alert" id="regAlert"></div>
+      <div class="form-row">
+        <div class="field"><label>Full Name</label><input type="text" id="regName" placeholder="Dr. John Doe"></div>
+        <div class="field"><label>Username</label><input type="text" id="regUser" placeholder="johndoe"></div>
+      </div>
+      <div class="field"><label>Email Address</label><input type="email" id="regEmail"
+          placeholder="john@university.edu"></div>
+      <div class="form-row">
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="regPass" placeholder="Min. 6 characters" oninput="checkPw(this)">
+          <div class="pw-strength">
+            <div class="pw-bar" id="pwBar"></div>
+          </div>
+        </div>
+        <div class="field"><label>Department</label><input type="text" id="regDept" placeholder="Computer Science">
+        </div>
+      </div>
+      <div style="margin-bottom:15px">
+        <label style="display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:7px">Role</label>
+        <div class="role-pills">
+          <button class="pill" onclick="setRole('faculty',this)">👨‍🏫 Faculty</button>
+          <button class="pill active" onclick="setRole('admin',this)">👨‍💼 Admin</button>
+        </div>
+      </div>
+      <div class="field" id="facIdField" style="display:none">
+        <label>Faculty ID</label>
+        <input type="text" id="regFacId" placeholder="FAC0001">
+      </div>
+      <button class="btn btn-primary" onclick="doRegister()" id="regBtn">Send Verification Code</button>
+      <div class="switch-link">Already registered? <a onclick="showPanel('panelLogin')">Login here</a></div>
+    </div>
+
+    <!-- OTP -->
+    <div class="panel" id="panelOTP">
+      <div class="header">
+        <span class="header-icon">📧</span>
+        <h1>Verify Your Email</h1>
+        <p id="otpSubtitle">Enter the 6-digit code sent to your email</p>
+      </div>
+      <div class="alert" id="otpAlert"></div>
+      <div class="otp-inputs">
+        <input class="otp-box" maxlength="1" id="o1" oninput="otpNav(this,null,'o2')">
+        <input class="otp-box" maxlength="1" id="o2" oninput="otpNav(this,'o1','o3')">
+        <input class="otp-box" maxlength="1" id="o3" oninput="otpNav(this,'o2','o4')">
+        <input class="otp-box" maxlength="1" id="o4" oninput="otpNav(this,'o3','o5')">
+        <input class="otp-box" maxlength="1" id="o5" oninput="otpNav(this,'o4','o6')">
+        <input class="otp-box" maxlength="1" id="o6" oninput="otpNav(this,'o5',null)">
+      </div>
+      <div class="timer">Code expires in <span id="timerVal">10:00</span></div>
+      <button class="btn btn-primary" onclick="doVerifyOTP()" id="otpBtn" style="margin-top:16px">Verify & Create
+        Account</button>
+      <button class="btn btn-ghost" onclick="resendOTP()">Resend Code</button>
+      <div class="switch-link"><a onclick="showPanel('panelRegister')">← Back to Registration</a></div>
+    </div>
+
+  </div>
+  <script>
+    const API = '';
+    let pendingEmail = '', timerInterval = null, selectedRole = 'admin';
+
+    function showPanel(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function setRole(role, el) {
+      selectedRole = role;
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('facIdField').style.display = role === 'faculty' ? 'block' : 'none';
+    }
+    function checkPw(el) {
+      const v = el.value; const bar = document.getElementById('pwBar'); let s = 0;
+      if (v.length >= 6) s++; if (v.length >= 10) s++;
+      if (/[A-Z]/.test(v)) s++; if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++;
+      const colors = ['#ef4444', '#f97316', '#fbbf24', '#34d399', '#10b981'];
+      bar.style.width = (s * 20) + '%'; bar.style.background = colors[s - 1] || '#ef4444';
+    }
+    function showAlert(id, msg, type) {
+      const el = document.getElementById(id);
+      el.textContent = msg; el.className = `alert ${type} show`;
+      if (type !== 'error') setTimeout(() => el.classList.remove('show'), 5000);
+    }
+    function setLoading(btnId, loading, defaultText) {
+      const btn = document.getElementById(btnId);
+      if (loading) { btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>Loading...`; }
+      else { btn.disabled = false; btn.textContent = defaultText; }
+    }
+    async function doLogin() {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      if (!user || !pass) return showAlert('loginAlert', 'Enter username and password', 'error');
+      setLoading('loginBtn', true);
+      try {
+        const r = await fetch(`${API}/api/auth/login`, {
+          method: 'POST', credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+        const d = await r.json();
+        if (!r.ok) return showAlert('loginAlert', d.error, 'error');
+        showAlert('loginAlert', `Welcome, ${d.user.full_name || d.user.username}!`, 'success');
+        setTimeout(() => { window.location.href = d.user.role === 'admin' ? '/admin' : '/faculty'; }, 800);
+      } catch (e) { showAlert('loginAlert', 'Cannot connect to server', 'error'); }
+      finally { setLoading('loginBtn', false, 'Sign In'); }
+    }
+    async function doRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const user = document.getElementById('regUser').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPass').value;
+      const dept = document.getElementById('regDept').value.trim();
+      const facId = document.getElementById('regFacId').value.trim();
+      if (!name || !user || !email || !pass) return showAlert('regAlert', 'Please fill all required fields', 'error');
+      if (pass.length < 6) return showAlert('regAlert', 'Password must be at least 6 characters', 'error');
+      setLoading('regBtn', true);
+      try {
+        const r = await fetch(`${API}/api/auth/register`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: name, username: user, email, password: pass, role: selectedRole, department: dept, faculty_id: facId })
+        });
+        const d = await r.json();
+        if (!r.ok) return showAlert('regAlert', d.error, 'error');
+        pendingEmail = email;
+        document.getElementById('otpSubtitle').textContent = `Code sent to ${email}`;
+        if (d.dev_otp) showAlert('otpAlert', `[DEV MODE] Your OTP: ${d.dev_otp}`, 'warn');
+        showPanel('panelOTP'); startTimer(600);
+      } catch (e) { showAlert('regAlert', 'Network error', 'error'); }
+      finally { setLoading('regBtn', false, 'Send Verification Code'); }
+    }
+    function otpNav(el, prevId, nextId) {
+      if (el.value && nextId) document.getElementById(nextId)?.focus();
+      if (!el.value && prevId) document.getElementById(prevId)?.focus();
+    }
+    function getOTP() { return ['o1', 'o2', 'o3', 'o4', 'o5', 'o6'].map(id => document.getElementById(id).value).join(''); }
+    async function doVerifyOTP() {
+      const otp = getOTP();
+      if (otp.length !== 6) return showAlert('otpAlert', 'Please enter all 6 digits', 'error');
+      setLoading('otpBtn', true);
+      try {
+        const r = await fetch(`${API}/api/auth/verify-otp`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: pendingEmail, otp })
+        });
+        const d = await r.json();
+        if (!r.ok) return showAlert('otpAlert', d.error, 'error');
+        clearInterval(timerInterval);
+        showAlert('otpAlert', '✅ Account created! Redirecting to login...', 'success');
+        setTimeout(() => showPanel('panelLogin'), 1500);
+      } catch (e) { showAlert('otpAlert', 'Network error', 'error'); }
+      finally { setLoading('otpBtn', false, 'Verify & Create Account'); }
+    }
+    async function resendOTP() {
+      try {
+        const r = await fetch(`${API}/api/auth/resend-otp`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: pendingEmail })
+        });
+        const d = await r.json();
+        if (!r.ok) return showAlert('otpAlert', d.error, 'error');
+        clearInterval(timerInterval); startTimer(600);
+        showAlert('otpAlert', d.dev_otp ? `[DEV] New OTP: ${d.dev_otp}` : 'New code sent!', 'success');
+      } catch (e) { showAlert('otpAlert', 'Error resending code', 'error'); }
+    }
+    function startTimer(seconds) {
+      let s = seconds; const el = document.getElementById('timerVal');
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        s--;
+        el.textContent = `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
+        if (s <= 0) { clearInterval(timerInterval); showAlert('otpAlert', 'OTP expired. Please register again.', 'error'); }
+      }, 1000);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      if (document.getElementById('panelLogin').classList.contains('active')) doLogin();
+    });
+  </script>
+</body>
+
+</html>

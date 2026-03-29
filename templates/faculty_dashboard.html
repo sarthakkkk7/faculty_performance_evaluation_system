@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      display: flex;
+      min-height: 100vh
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #dde3ea;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100
+    }
+
+    .sidebar-logo {
+      padding: 18px 16px;
+      border-bottom: 1px solid #edf0f4;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: #1a56db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0
+    }
+
+    .logo-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a2332;
+      line-height: 1.3
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: #6b7a8d
+    }
+
+    nav {
+      padding: 12px 10px;
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #4a5568;
+      margin-bottom: 1px;
+      transition: all .15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: 'Inter', sans-serif
+    }
+
+    .nav-item:hover {
+      background: #f0f4f8;
+      color: #1a2332
+    }
+
+    .nav-item.active {
+      background: #e8f0fe;
+      color: #1a56db;
+      font-weight: 600
+    }
+
+    .nav-item .icon {
+      font-size: 15px;
+      width: 18px;
+      flex-shrink: 0
+    }
+
+    .sidebar-footer {
+      padding: 14px;
+      border-top: 1px solid #edf0f4
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      background: #f7faff;
+      border: 1px solid #dde3ea
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: #1a56db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0
+    }
+
+    .user-name {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .user-dept {
+      font-size: 10px;
+      color: #6b7a8d
+    }
+
+    .logout-btn {
+      background: none;
+      border: none;
+      color: #a0aab4;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 3px;
+      border-radius: 4px
+    }
+
+    .logout-btn:hover {
+      color: #e53e3e
+    }
+
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    .topbar {
+      padding: 14px 28px;
+      border-bottom: 1px solid #dde3ea;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .page-title {
+      font-size: 17px;
+      font-weight: 700
+    }
+
+    .page-sub {
+      font-size: 12px;
+      color: #6b7a8d;
+      margin-top: 2px
+    }
+
+    .badge {
+      background: #e8f0fe;
+      color: #1a56db;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid #c7deff
+    }
+
+    .content {
+      padding: 22px 28px;
+      flex: 1
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .profile-header {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-left: 4px solid #1a56db
+    }
+
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: #e8f0fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0
+    }
+
+    .profile-info h2 {
+      font-size: 20px;
+      font-weight: 700
+    }
+
+    .profile-info p {
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-top: 3px
+    }
+
+    .profile-badges {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap
+    }
+
+    .profile-badge {
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #f0f6ff;
+      border: 1px solid #c7deff;
+      color: #1a56db
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      padding: 18px;
+      border-top: 3px solid var(--c, #1a56db)
+    }
+
+    .stat-card .icon {
+      font-size: 22px;
+      margin-bottom: 8px
+    }
+
+    .stat-card .value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--c, #1a56db)
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: #6b7a8d;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      font-weight: 600
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 16px;
+      margin-bottom: 18px
+    }
+
+    .chart-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      padding: 18px
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 3px
+    }
+
+    .chart-sub {
+      font-size: 11px;
+      color: #6b7a8d;
+      margin-bottom: 14px
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 200px
+    }
+
+    .radar-wrap {
+      height: 240px;
+      display: flex;
+      justify-content: center
+    }
+
+    .table-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 18px
+    }
+
+    .table-toolbar {
+      padding: 13px 18px;
+      border-bottom: 1px solid #edf0f4;
+      background: #fafbfc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: #6b7a8d;
+      background: #fafbfc;
+      border-bottom: 1px solid #edf0f4;
+      text-align: left
+    }
+
+    td {
+      padding: 11px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid #f3f5f7
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: #f7faff
+    }
+
+    .perf-badge {
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .perf-good {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #b2f0d4
+    }
+
+    .perf-avg {
+      background: #fffbea;
+      color: #92600a;
+      border: 1px solid #fde68a
+    }
+
+    .perf-bad {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #ffc7c7
+    }
+
+    .status-pending {
+      background: #fffbea;
+      color: #92600a;
+      border: 1px solid #fde68a;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .status-verified {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #b2f0d4;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .status-rejected {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #ffc7c7;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .suggest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px
+    }
+
+    .suggest-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 9px;
+      padding: 15px
+    }
+
+    .suggest-card.high {
+      border-left: 3px solid #e53e3e
+    }
+
+    .suggest-card.medium {
+      border-left: 3px solid #d97706
+    }
+
+    .suggest-card.low {
+      border-left: 3px solid #1a56db
+    }
+
+    .suggest-card.strength {
+      border-left: 3px solid #1a7a4a
+    }
+
+    .suggest-card.missing {
+      border-left: 3px solid #a0aab4
+    }
+
+    .suggest-area {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 5px
+    }
+
+    .suggest-issue {
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 500
+    }
+
+    .suggest-text {
+      font-size: 12px;
+      color: #6b7a8d;
+      line-height: 1.6
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      z-index: 500;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 30px 16px;
+      overflow-y: auto
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .setup-modal {
+      background: #fff;
+      border-radius: 14px;
+      width: min(680px, 96vw);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+      margin: auto
+    }
+
+    .setup-header {
+      padding: 24px 28px 20px;
+      text-align: center;
+      border-bottom: 1px solid #edf0f4
+    }
+
+    .setup-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .setup-header p {
+      font-size: 13px;
+      color: #6b7a8d
+    }
+
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-top: 18px
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f0f4f8;
+      color: #a0aab4;
+      border: 2px solid #dde3ea;
+      transition: all .3s
+    }
+
+    .step-num.active {
+      background: #1a56db;
+      color: #fff;
+      border-color: #1a56db
+    }
+
+    .step-num.done {
+      background: #1a7a4a;
+      color: #fff;
+      border-color: #1a7a4a
+    }
+
+    .step-label {
+      font-size: 11px;
+      color: #a0aab4;
+      font-weight: 500
+    }
+
+    .step-label.active {
+      color: #1a56db
+    }
+
+    .step-line {
+      width: 40px;
+      height: 2px;
+      background: #dde3ea;
+      margin: 0 4px
+    }
+
+    .step-line.done {
+      background: #1a7a4a
+    }
+
+    .setup-body {
+      padding: 24px 28px
+    }
+
+    .step-panel {
+      display: none
+    }
+
+    .step-panel.active {
+      display: block
+    }
+
+    .form-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #edf0f4;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .field {
+      margin-bottom: 14px
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      color: #1a2332;
+      background: #fff;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #1a56db;
+      box-shadow: 0 0 0 3px rgba(26, 86, 219, .08)
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 70px
+    }
+
+    .range-field label {
+      display: flex;
+      justify-content: space-between
+    }
+
+    .range-field input[type=range] {
+      width: 100%;
+      accent-color: #1a56db;
+      margin: 6px 0
+    }
+
+    .range-val {
+      font-weight: 700;
+      color: #1a56db
+    }
+
+    .doc-section {
+      background: #f7faff;
+      border: 1px solid #e8f0fe;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px
+    }
+
+    .doc-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a56db;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .doc-entry {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 10px;
+      position: relative
+    }
+
+    .doc-entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px
+    }
+
+    .doc-entry-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2332
+    }
+
+    .remove-btn {
+      background: #fff0f0;
+      border: 1px solid #ffc7c7;
+      color: #c0392b;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif
+    }
+
+    .file-upload-area {
+      border: 2px dashed #c7deff;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      background: #f7faff
+    }
+
+    .file-upload-area:hover {
+      border-color: #1a56db;
+      background: #e8f0fe
+    }
+
+    .file-upload-area input {
+      display: none
+    }
+
+    .file-upload-icon {
+      font-size: 24px;
+      margin-bottom: 6px
+    }
+
+    .file-upload-text {
+      font-size: 12px;
+      color: #6b7a8d
+    }
+
+    .file-uploaded {
+      background: #e6f9f0;
+      border: 1px solid #b2f0d4;
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #1a7a4a
+    }
+
+    .add-doc-btn {
+      background: #e8f0fe;
+      border: 1.5px dashed #1a56db;
+      color: #1a56db;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      transition: all .2s
+    }
+
+    .add-doc-btn:hover {
+      background: #d0e3ff
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .review-item {
+      background: #f7faff;
+      border: 1px solid #e8f0fe;
+      border-radius: 8px;
+      padding: 10px 14px
+    }
+
+    .review-item .r-label {
+      font-size: 10px;
+      color: #6b7a8d;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 3px
+    }
+
+    .review-item .r-val {
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .score-preview {
+      background: #f0f6ff;
+      border: 1px solid #c7deff;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 18px
+    }
+
+    .score-preview .sc-label {
+      font-size: 12px;
+      color: #6b7a8d;
+      margin-bottom: 4px
+    }
+
+    .score-preview .sc-val {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a56db
+    }
+
+    .score-preview .sc-cat {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 4px
+    }
+
+    .setup-footer {
+      padding: 16px 28px;
+      border-top: 1px solid #edf0f4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .btn {
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all .18s;
+      border: none
+    }
+
+    .btn-primary {
+      background: #1a56db;
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      background: #1446b8
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #4a5568;
+      border: 1.5px solid #dde3ea
+    }
+
+    .btn-outline:hover {
+      background: #f7faff
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      transition: all .18s
+    }
+
+    .btn-blue {
+      background: #1a56db;
+      color: #fff
+    }
+
+    .btn-blue:hover {
+      background: #1446b8
+    }
+
+    .alert {
+      padding: 10px 13px;
+      border-radius: 7px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none
+    }
+
+    .alert.show {
+      display: block
+    }
+
+    .alert.error {
+      background: #fff0f0;
+      border: 1px solid #ffc7c7;
+      color: #c0392b
+    }
+
+    .alert.success {
+      background: #f0fff8;
+      border: 1px solid #b2f0d4;
+      color: #1a7a4a
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 9px;
+      padding: 11px 16px;
+      font-size: 13px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .1);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    #toast.success {
+      border-left: 3px solid #1a7a4a
+    }
+
+    #toast.error {
+      border-left: 3px solid #e53e3e
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    @media(max-width:880px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .charts-row {
+        grid-template-columns: 1fr
+      }
+
+      .suggest-grid {
+        grid-template-columns: 1fr
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr
+      }
+
+      .review-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">📊</div>
+      <div>
+        <div class="logo-name">Faculty System</div>
+        <div class="logo-sub">My Dashboard</div>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-item active" onclick="showPage('overview')"><span class="icon">🏠</span>Overview</button>
+      <button class="nav-item" onclick="showPage('performance')"><span class="icon">📈</span>My Performance</button>
+      <button class="nav-item" onclick="showPage('documents')"><span class="icon">📂</span>My Documents</button>
+      <button class="nav-item" onclick="showPage('trends')"><span class="icon">📊</span>Trends & Charts</button>
+      <button class="nav-item" onclick="showPage('suggestions')"><span class="icon">💡</span>AI Suggestions</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">👨‍🏫</div>
+        <div style="flex:1;min-width:0">
+          <div class="user-name" id="userName">Faculty</div>
+          <div class="user-dept" id="userDept">—</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">Overview</div>
+        <div class="page-sub" id="pageSub">Welcome to your performance dashboard</div>
+      </div>
+      <span class="badge">Faculty</span>
+    </div>
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="pageOverview">
+        <div class="profile-header">
+          <div class="profile-avatar">👨‍🏫</div>
+          <div class="profile-info">
+            <h2 id="profileName">Loading...</h2>
+            <p id="profileMeta">—</p>
+            <div class="profile-badges">
+              <span class="profile-badge" id="profileDept">—</span>
+              <span class="profile-badge" id="profileDesig">—</span>
+              <span class="profile-badge" id="profileExp">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" style="--c:#1a7a4a">
+            <div class="icon">⭐</div>
+            <div class="value" id="statBest">—</div>
+            <div class="label">Best Score</div>
+          </div>
+          <div class="stat-card" style="--c:#1a56db">
+            <div class="icon">📚</div>
+            <div class="value" id="statPubs">—</div>
+            <div class="label">Publications</div>
+          </div>
+          <div class="stat-card" style="--c:#d97706">
+            <div class="icon">📖</div>
+            <div class="value" id="statCit">—</div>
+            <div class="label">Citations</div>
+          </div>
+          <div class="stat-card" style="--c:#6b21a8">
+            <div class="icon">👨‍🎓</div>
+            <div class="value" id="statMent">—</div>
+            <div class="label">Students Mentored</div>
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Performance Score Trend</div>
+            <div class="chart-sub">Your overall score year by year</div>
+            <div class="chart-wrap"><canvas id="scoreTrendChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Latest Year Metrics</div>
+            <div class="chart-sub">Radar overview of all areas</div>
+            <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE TABLE -->
+      <div class="page" id="pagePerformance">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <span style="font-size:14px;font-weight:600">Year-wise Performance Records</span>
+            <button class="btn-sm btn-blue" onclick="openAddPerformance()">+ Add Year Data</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Overall</th>
+                <th>Teaching</th>
+                <th>Research</th>
+                <th>Admin</th>
+                <th>Publications</th>
+                <th>Citations</th>
+                <th>Mentored</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody id="perfTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div class="page" id="pageDocuments">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <span style="font-size:14px;font-weight:600">📂 My Submitted Documents</span>
+            <span style="font-size:12px;color:#6b7a8d">Admin verifies these documents</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Details</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Admin Remark</th>
+              </tr>
+            </thead>
+            <tbody id="docsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TRENDS -->
+      <div class="page" id="pageTrends">
+        <div class="charts-row" style="margin-bottom:18px">
+          <div class="chart-card">
+            <div class="chart-title">Teaching & Research Over Years</div>
+            <div class="chart-sub">Comparing key metrics</div>
+            <div class="chart-wrap"><canvas id="trTrendChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Publications & Citations</div>
+            <div class="chart-sub">Research output history</div>
+            <div class="chart-wrap"><canvas id="pubTrendChart"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">All Metrics Trend</div>
+          <div class="chart-sub">Complete performance history</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="allMetricsChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <div class="page" id="pageSuggestions">
+        <div id="suggestContent">
+          <div style="text-align:center;padding:40px;color:#a0aab4">Loading suggestions...</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════ PROFILE SETUP MODAL ═══════════════ -->
+  <div class="modal-overlay" id="setupModal">
+    <div class="setup-modal">
+      <div class="setup-header">
+        <div style="font-size:32px;margin-bottom:8px">🎓</div>
+        <h2>Complete Your Profile</h2>
+        <p>Fill in your information to activate your faculty dashboard</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num active" id="sn1">1</div>
+            <div class="step-label active" id="sl1">Personal Info</div>
+          </div>
+          <div class="step-line" id="sl12"></div>
+          <div class="step">
+            <div class="step-num" id="sn2">2</div>
+            <div class="step-label" id="sl2">Performance Data</div>
+          </div>
+          <div class="step-line" id="sl23"></div>
+          <div class="step">
+            <div class="step-num" id="sn3">3</div>
+            <div class="step-label" id="sl3">Review & Submit</div>
+          </div>
+        </div>
+      </div>
+      <div class="setup-body">
+        <div class="alert" id="setupAlert"></div>
+        <!-- STEP 1 -->
+        <div class="step-panel active" id="step1">
+          <div class="form-section-title">👤 Personal Information</div>
+          <div class="form-grid">
+            <div class="field"><label>Full Name *</label><input type="text" id="s_name" placeholder="Dr. John Doe">
+            </div>
+            <div class="field"><label>Department *</label><input type="text" id="s_dept" placeholder="Computer Science">
+            </div>
+            <div class="field"><label>Designation *</label>
+              <select id="s_desig">
+                <option value="">Select designation</option>
+                <option>Assistant Professor</option>
+                <option>Associate Professor</option>
+                <option>Professor</option>
+                <option>Head of Department</option>
+                <option>Dean</option>
+                <option>Lecturer</option>
+              </select>
+            </div>
+            <div class="field"><label>Experience (Years) *</label><input type="number" id="s_exp" placeholder="5"
+                min="0" max="50"></div>
+            <div class="field"><label>Academic Year *</label>
+              <select id="s_year">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+            <div class="field"><label>Teaching Hours / Week *</label><input type="number" id="s_thours" placeholder="16"
+                min="0" max="40"></div>
+          </div>
+        </div>
+        <!-- STEP 2 -->
+        <div class="step-panel" id="step2">
+          <div class="form-section-title">📊 Performance Metrics & Document Proof</div>
+          <div class="doc-section">
+            <div class="doc-section-title">📚 Publications</div>
+            <div class="form-grid" style="margin-bottom:10px">
+              <div class="field"><label>Number of Publications</label><input type="number" id="s_pub" placeholder="0"
+                  min="0" value="0"></div>
+              <div class="field"><label>Total Citations Received</label><input type="number" id="s_cit" placeholder="0"
+                  min="0" value="0"></div>
+            </div>
+            <div id="pubList"></div>
+            <button class="add-doc-btn" onclick="addPubEntry()">+ Add Publication Details & Proof</button>
+          </div>
+          <div class="doc-section">
+            <div class="doc-section-title">🔬 Projects Completed</div>
+            <div class="field" style="margin-bottom:10px"><label>Number of Projects Completed</label><input
+                type="number" id="s_proj" placeholder="0" min="0" value="0" style="max-width:200px"></div>
+            <div id="projList"></div>
+            <button class="add-doc-btn" onclick="addProjEntry()">+ Add Project Details & Proof</button>
+          </div>
+          <div class="doc-section">
+            <div class="doc-section-title">👨‍🎓 Students Mentored</div>
+            <div class="field"><label>Number of Students Mentored</label><input type="number" id="s_ment"
+                placeholder="0" min="0" value="0" style="max-width:200px"></div>
+          </div>
+          <div class="doc-section">
+            <div class="doc-section-title">⭐ Ratings & Supporting Documents</div>
+            <div class="field range-field"><label>Teaching Rating &nbsp;<span class="range-val" id="rv_teach">3.0</span>
+                / 5</label><input type="range" id="s_teach" min="1" max="5" step="0.1" value="3"
+                oninput="document.getElementById('rv_teach').textContent=parseFloat(this.value).toFixed(1)"></div>
+            <div class="field"><label>Teaching Proof (Student feedback / Syllabus PDF)</label>
+              <div class="file-upload-area" onclick="triggerFile('teach_proof')"><input type="file" id="teach_proof"
+                  accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'teach_proof_disp')">
+                <div class="file-upload-icon">📄</div>
+                <div class="file-upload-text">Click to upload PDF or image</div>
+              </div>
+              <div id="teach_proof_disp"></div>
+            </div>
+            <div class="field range-field"><label>Student Feedback &nbsp;<span class="range-val" id="rv_feed">3.0</span>
+                / 5</label><input type="range" id="s_feed" min="1" max="5" step="0.1" value="3"
+                oninput="document.getElementById('rv_feed').textContent=parseFloat(this.value).toFixed(1)"></div>
+            <div class="field range-field"><label>Research Score &nbsp;<span class="range-val" id="rv_res">3.0</span> /
+                5</label><input type="range" id="s_res" min="1" max="5" step="0.1" value="3"
+                oninput="document.getElementById('rv_res').textContent=parseFloat(this.value).toFixed(1)"></div>
+            <div class="field"><label>Research Proof (Certificate / Award PDF)</label>
+              <div class="file-upload-area" onclick="triggerFile('res_proof')"><input type="file" id="res_proof"
+                  accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'res_proof_disp')">
+                <div class="file-upload-icon">📄</div>
+                <div class="file-upload-text">Click to upload PDF or image</div>
+              </div>
+              <div id="res_proof_disp"></div>
+            </div>
+            <div class="field range-field"><label>Administration Score &nbsp;<span class="range-val"
+                  id="rv_adm">3.0</span> / 5</label><input type="range" id="s_adm" min="1" max="5" step="0.1" value="3"
+                oninput="document.getElementById('rv_adm').textContent=parseFloat(this.value).toFixed(1)"></div>
+            <div class="field"><label>Administration Proof (Committee letter / Event certificate)</label>
+              <div class="file-upload-area" onclick="triggerFile('adm_proof')"><input type="file" id="adm_proof"
+                  accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'adm_proof_disp')">
+                <div class="file-upload-icon">📄</div>
+                <div class="file-upload-text">Click to upload PDF or image</div>
+              </div>
+              <div id="adm_proof_disp"></div>
+            </div>
+          </div>
+        </div>
+        <!-- STEP 3 -->
+        <div class="step-panel" id="step3">
+          <div class="form-section-title">✅ Review Your Information</div>
+          <div class="score-preview">
+            <div class="sc-label">Calculated Overall Score</div>
+            <div class="sc-val" id="reviewScore">—</div>
+            <div class="sc-cat" id="reviewCat">—</div>
+          </div>
+          <div class="review-grid" id="reviewGrid"></div>
+          <div
+            style="background:#fffbea;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin-top:16px;font-size:13px;color:#92600a">
+            ⚠️ All uploaded documents will be sent to admin for verification. Your performance data will be visible
+            immediately, but documents show as <strong>Pending</strong> until admin approves.
+          </div>
+        </div>
+      </div>
+      <div class="setup-footer">
+        <button class="btn btn-outline" id="prevBtn" onclick="prevStep()" style="visibility:hidden">← Previous</button>
+        <div style="font-size:12px;color:#a0aab4" id="stepIndicator">Step 1 of 3</div>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ADD PERFORMANCE MODAL ═══════════════ -->
+  <div class="modal-overlay" id="addPerfModal">
+    <div class="setup-modal" style="max-width:660px">
+      <div class="setup-header">
+        <h2>Add Performance Data</h2>
+        <p>Add your performance record with supporting documents for admin verification</p>
+      </div>
+      <div class="setup-body">
+        <div class="alert" id="addPerfAlert"></div>
+        <div class="form-section-title">📋 Basic Information</div>
+        <div class="form-grid">
+          <div class="field"><label>Year *</label>
+            <select id="ap_year">
+              <option>2022</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option selected>2025</option>
+              <option>2026</option>
+            </select>
+          </div>
+          <div class="field"><label>Teaching Hours / Week *</label><input type="number" id="ap_thours" placeholder="16"
+              min="0"></div>
+          <div class="field"><label>Experience Years</label><input type="number" id="ap_exp" placeholder="5" min="0">
+          </div>
+          <div class="field"><label>Students Mentored</label><input type="number" id="ap_ment" placeholder="0" min="0">
+          </div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">📚 Publications</div>
+          <div class="form-grid" style="margin-bottom:10px">
+            <div class="field"><label>Number of Publications</label><input type="number" id="ap_pub" placeholder="0"
+                min="0" value="0"></div>
+            <div class="field"><label>Total Citations</label><input type="number" id="ap_cit" placeholder="0" min="0"
+                value="0"></div>
+          </div>
+          <div id="ap_pubList"></div>
+          <button class="add-doc-btn" onclick="addApPubEntry()">+ Add Publication Details & Proof</button>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">🔬 Projects</div>
+          <div class="field" style="margin-bottom:10px"><label>Number of Projects Completed</label><input type="number"
+              id="ap_proj" placeholder="0" min="0" value="0" style="max-width:200px"></div>
+          <div id="ap_projList"></div>
+          <button class="add-doc-btn" onclick="addApProjEntry()">+ Add Project Details & Proof</button>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">⭐ Ratings & Proof Documents</div>
+          <div class="field range-field"><label>Teaching Rating &nbsp;<span class="range-val" id="arv_teach">3.0</span>
+              / 5</label><input type="range" id="ap_teach" min="1" max="5" step="0.1" value="3"
+              oninput="document.getElementById('arv_teach').textContent=parseFloat(this.value).toFixed(1)"></div>
+          <div class="field"><label>Teaching Proof (Student feedback / Syllabus PDF)</label>
+            <div class="file-upload-area" onclick="triggerFile('ap_teach_proof')"><input type="file" id="ap_teach_proof"
+                accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'ap_teach_proof_disp')">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">Click to upload PDF or image</div>
+            </div>
+            <div id="ap_teach_proof_disp"></div>
+          </div>
+          <div class="field range-field"><label>Student Feedback &nbsp;<span class="range-val" id="arv_feed">3.0</span>
+              / 5</label><input type="range" id="ap_feed" min="1" max="5" step="0.1" value="3"
+              oninput="document.getElementById('arv_feed').textContent=parseFloat(this.value).toFixed(1)"></div>
+          <div class="field range-field"><label>Research Score &nbsp;<span class="range-val" id="arv_res">3.0</span> /
+              5</label><input type="range" id="ap_res" min="1" max="5" step="0.1" value="3"
+              oninput="document.getElementById('arv_res').textContent=parseFloat(this.value).toFixed(1)"></div>
+          <div class="field"><label>Research Proof (Certificate / Award PDF)</label>
+            <div class="file-upload-area" onclick="triggerFile('ap_res_proof')"><input type="file" id="ap_res_proof"
+                accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'ap_res_proof_disp')">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">Click to upload PDF or image</div>
+            </div>
+            <div id="ap_res_proof_disp"></div>
+          </div>
+          <div class="field range-field"><label>Administration Score &nbsp;<span class="range-val"
+                id="arv_adm">3.0</span> / 5</label><input type="range" id="ap_adm" min="1" max="5" step="0.1" value="3"
+              oninput="document.getElementById('arv_adm').textContent=parseFloat(this.value).toFixed(1)"></div>
+          <div class="field"><label>Administration Proof (Committee letter / Event certificate)</label>
+            <div class="file-upload-area" onclick="triggerFile('ap_adm_proof')"><input type="file" id="ap_adm_proof"
+                accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'ap_adm_proof_disp')">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">Click to upload PDF or image</div>
+            </div>
+            <div id="ap_adm_proof_disp"></div>
+          </div>
+        </div>
+        <div
+          style="background:#f0f6ff;border:1px solid #c7deff;border-radius:8px;padding:12px 16px;font-size:13px;color:#1a56db">
+          ℹ️ All uploaded documents will be sent to admin for verification. Your score is saved immediately.
+        </div>
+      </div>
+      <div class="setup-footer">
+        <button class="btn btn-outline" onclick="closeAddPerfModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAddPerformance()" id="addPerfBtn">💾 Save Record</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const API = '';
+    let profileData = null, perfs = [], currentStep = 1;
+    let charts = {};
+    let pubEntries = [], projEntries = [];
+    let apPubEntries = [], apProjEntries = [], apCount = 0;
+    let fileStore = {};
+    let pubCount = 0;
+
+    const chartOpts = {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#6b7a8d', boxWidth: 10, font: { size: 11, family: 'Inter' } } } },
+      scales: { y: { ticks: { color: '#6b7a8d', font: { size: 10 } }, grid: { color: '#f0f4f8' } }, x: { ticks: { color: '#6b7a8d', font: { size: 10 } }, grid: { display: false } } }
+    };
+    function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+    // ── FILE HANDLING ─────────────────────────────────────────────
+    function triggerFile(id) { document.getElementById(id).click(); }
+
+    function handleFileSelect(input, dispId) {
+      const file = input.files[0]; if (!file) return;
+      fileStore[input.id] = file;
+      document.getElementById(dispId).innerHTML = `<div class="file-uploaded">✅ ${file.name} (${(file.size / 1024).toFixed(1)} KB)</div>`;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = () => rej(new Error('Read failed'));
+        r.readAsDataURL(file);
+      });
+    }
+
+    // ── VIEW MY FILE (opens in new tab) ──────────────────────────
+    async function viewMyFile(docId, title, fileName) {
+      try {
+        const d = await fetch(`${API}/api/documents/${docId}/file`, { credentials: 'include' }).then(r => r.json());
+        if (d.error) { toast(d.error, 'error'); return; }
+        const dataUrl = `data:${d.file_type};base64,${d.file_data}`;
+        const isImage = d.file_type && d.file_type.startsWith('image/');
+        const win = window.open('', '_blank');
+        if (isImage) {
+          win.document.write(`<html><head><title>${title}</title></head><body style="margin:0;background:#1a2332;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="${dataUrl}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`);
+        } else {
+          win.document.write(`<html><head><title>${title}</title></head><body style="margin:0"><iframe src="${dataUrl}" style="width:100vw;height:100vh;border:none"></iframe></body></html>`);
+        }
+      } catch (e) { toast('Failed to load file', 'error'); }
+    }
+
+    // ── PROFILE SETUP PUB/PROJ ENTRIES ──────────────────────────
+    function addPubEntry() {
+      pubCount++;
+      const id = `pub_${pubCount}`;
+      pubEntries.push(id);
+      const div = document.createElement('div');
+      div.className = 'doc-entry'; div.id = id;
+      div.innerHTML = `
+    <div class="doc-entry-header"><div class="doc-entry-title">Publication #${pubCount}</div><button class="remove-btn" onclick="removeEntry('${id}','pub')">Remove</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Paper Title *</label><input type="text" id="${id}_title" placeholder="e.g. Deep Learning for Image Classification"></div>
+      <div class="field"><label>Journal / Conference Name *</label><input type="text" id="${id}_journal" placeholder="e.g. IEEE Transactions"></div>
+      <div class="field"><label>Publication Date</label><input type="text" id="${id}_date" placeholder="e.g. March 2025"></div>
+      <div class="field"><label>DOI / Link</label><input type="text" id="${id}_doi" placeholder="https://doi.org/..."></div>
+    </div>
+    <div class="field"><label>Upload Publication PDF *</label>
+      <div class="file-upload-area" onclick="triggerFile('${id}_file')"><input type="file" id="${id}_file" accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'${id}_disp')"><div class="file-upload-icon">📄</div><div class="file-upload-text">Upload published paper PDF</div></div>
+      <div id="${id}_disp"></div>
+    </div>`;
+      document.getElementById('pubList').appendChild(div);
+    }
+
+    function addProjEntry() {
+      pubCount++;
+      const id = `proj_${pubCount}`;
+      projEntries.push(id);
+      const div = document.createElement('div');
+      div.className = 'doc-entry'; div.id = id;
+      div.innerHTML = `
+    <div class="doc-entry-header"><div class="doc-entry-title">Project #${projEntries.length}</div><button class="remove-btn" onclick="removeEntry('${id}','proj')">Remove</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Project Name *</label><input type="text" id="${id}_title" placeholder="e.g. Smart Traffic Management System"></div>
+      <div class="field"><label>Completion Date</label><input type="text" id="${id}_date" placeholder="e.g. December 2024"></div>
+    </div>
+    <div class="field"><label>Project Description</label><textarea id="${id}_desc" placeholder="Brief description..."></textarea></div>
+    <div class="field"><label>Upload Project Report / Certificate *</label>
+      <div class="file-upload-area" onclick="triggerFile('${id}_file')"><input type="file" id="${id}_file" accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'${id}_disp')"><div class="file-upload-icon">📄</div><div class="file-upload-text">Upload project report or completion certificate</div></div>
+      <div id="${id}_disp"></div>
+    </div>`;
+      document.getElementById('projList').appendChild(div);
+    }
+
+    function removeEntry(id, type) {
+      document.getElementById(id)?.remove();
+      if (type === 'pub') pubEntries = pubEntries.filter(e => e !== id);
+      if (type === 'proj') projEntries = projEntries.filter(e => e !== id);
+    }
+
+    // ── ADD PERFORMANCE PUB/PROJ ENTRIES ─────────────────────────
+    function addApPubEntry() {
+      apCount++;
+      const id = `appub_${apCount}`;
+      apPubEntries.push(id);
+      const div = document.createElement('div');
+      div.className = 'doc-entry'; div.id = id;
+      div.innerHTML = `
+    <div class="doc-entry-header"><div class="doc-entry-title">Publication #${apPubEntries.length}</div><button class="remove-btn" onclick="removeApEntry('${id}','pub')">Remove</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Paper Title *</label><input type="text" id="${id}_title" placeholder="e.g. Deep Learning for Image Classification"></div>
+      <div class="field"><label>Journal / Conference *</label><input type="text" id="${id}_journal" placeholder="e.g. IEEE Transactions"></div>
+      <div class="field"><label>Publication Date</label><input type="text" id="${id}_date" placeholder="e.g. March 2024"></div>
+      <div class="field"><label>DOI / Link</label><input type="text" id="${id}_doi" placeholder="https://doi.org/..."></div>
+    </div>
+    <div class="field"><label>Upload Publication PDF *</label>
+      <div class="file-upload-area" onclick="triggerFile('${id}_file')"><input type="file" id="${id}_file" accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'${id}_disp')"><div class="file-upload-icon">📄</div><div class="file-upload-text">Upload published paper PDF</div></div>
+      <div id="${id}_disp"></div>
+    </div>`;
+      document.getElementById('ap_pubList').appendChild(div);
+    }
+
+    function addApProjEntry() {
+      apCount++;
+      const id = `approj_${apCount}`;
+      apProjEntries.push(id);
+      const div = document.createElement('div');
+      div.className = 'doc-entry'; div.id = id;
+      div.innerHTML = `
+    <div class="doc-entry-header"><div class="doc-entry-title">Project #${apProjEntries.length}</div><button class="remove-btn" onclick="removeApEntry('${id}','proj')">Remove</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Project Name *</label><input type="text" id="${id}_title" placeholder="e.g. Smart Traffic Management System"></div>
+      <div class="field"><label>Completion Date</label><input type="text" id="${id}_date" placeholder="e.g. December 2024"></div>
+    </div>
+    <div class="field"><label>Project Description</label><textarea id="${id}_desc" placeholder="Brief description..."></textarea></div>
+    <div class="field"><label>Upload Project Report / Certificate *</label>
+      <div class="file-upload-area" onclick="triggerFile('${id}_file')"><input type="file" id="${id}_file" accept=".pdf,.jpg,.png" onchange="handleFileSelect(this,'${id}_disp')"><div class="file-upload-icon">📄</div><div class="file-upload-text">Upload project report or certificate</div></div>
+      <div id="${id}_disp"></div>
+    </div>`;
+      document.getElementById('ap_projList').appendChild(div);
+    }
+
+    function removeApEntry(id, type) {
+      document.getElementById(id)?.remove();
+      if (type === 'pub') apPubEntries = apPubEntries.filter(e => e !== id);
+      if (type === 'proj') apProjEntries = apProjEntries.filter(e => e !== id);
+    }
+
+    // ── SETUP STEPS ───────────────────────────────────────────────
+    function updateStepUI() {
+      [1, 2, 3].forEach(i => {
+        document.getElementById(`sn${i}`).className = 'step-num' + (i < currentStep ? ' done' : i === currentStep ? ' active' : '');
+        document.getElementById(`sl${i}`).className = 'step-label' + (i === currentStep ? ' active' : '');
+        document.getElementById(`step${i}`).className = 'step-panel' + (i === currentStep ? ' active' : '');
+      });
+      document.getElementById('sl12').className = 'step-line' + (currentStep > 1 ? ' done' : '');
+      document.getElementById('sl23').className = 'step-line' + (currentStep > 2 ? ' done' : '');
+      document.getElementById('stepIndicator').textContent = `Step ${currentStep} of 3`;
+      document.getElementById('prevBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+      document.getElementById('nextBtn').textContent = currentStep === 3 ? '✅ Submit Profile' : 'Next →';
+    }
+
+    function nextStep() {
+      if (currentStep === 1) {
+        if (!document.getElementById('s_name').value.trim()) return showSetupAlert('Please enter your full name', 'error');
+        if (!document.getElementById('s_dept').value.trim()) return showSetupAlert('Please enter your department', 'error');
+        if (!document.getElementById('s_desig').value) return showSetupAlert('Please select your designation', 'error');
+        if (!document.getElementById('s_exp').value) return showSetupAlert('Please enter experience years', 'error');
+        if (!document.getElementById('s_thours').value) return showSetupAlert('Please enter teaching hours', 'error');
+        document.getElementById('setupAlert').classList.remove('show');
+        currentStep = 2; updateStepUI(); return;
+      }
+      if (currentStep === 2) { currentStep = 3; buildReview(); updateStepUI(); return; }
+      if (currentStep === 3) { submitProfile(); }
+    }
+
+    function prevStep() { if (currentStep > 1) { currentStep--; updateStepUI(); } }
+
+    function calcScore() {
+      const t = parseFloat(document.getElementById('s_teach').value);
+      const f = parseFloat(document.getElementById('s_feed').value);
+      const r = parseFloat(document.getElementById('s_res').value);
+      const a = parseFloat(document.getElementById('s_adm').value);
+      return Math.round((t * .35 + f * .20 + r * .25 + a * .20) * 100) / 100;
+    }
+    function getCategory(s) { return s >= 4 ? '🏆 Excellent' : s >= 3 ? '✅ Good' : s >= 2 ? '⚠️ Average' : '❌ Needs Improvement'; }
+
+    function buildReview() {
+      const score = calcScore();
+      document.getElementById('reviewScore').textContent = score.toFixed(2);
+      document.getElementById('reviewCat').textContent = getCategory(score);
+      const items = [
+        ['Name', document.getElementById('s_name').value],
+        ['Department', document.getElementById('s_dept').value],
+        ['Designation', document.getElementById('s_desig').value],
+        ['Experience', document.getElementById('s_exp').value + ' years'],
+        ['Year', document.getElementById('s_year').value],
+        ['Teaching Hours', document.getElementById('s_thours').value + '/week'],
+        ['Publications', document.getElementById('s_pub').value || '0'],
+        ['Citations', document.getElementById('s_cit').value || '0'],
+        ['Projects', document.getElementById('s_proj').value || '0'],
+        ['Students Mentored', document.getElementById('s_ment').value || '0'],
+        ['Teaching Rating', document.getElementById('s_teach').value + ' / 5'],
+        ['Research Score', document.getElementById('s_res').value + ' / 5'],
+        ['Publication docs', pubEntries.length + ' added'],
+        ['Project docs', projEntries.length + ' added'],
+      ];
+      document.getElementById('reviewGrid').innerHTML = items.map(([l, v]) => `<div class="review-item"><div class="r-label">${l}</div><div class="r-val">${v}</div></div>`).join('');
+    }
+
+    async function submitProfile() {
+      const btn = document.getElementById('nextBtn');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
+      const year = parseInt(document.getElementById('s_year').value);
+      const payload = {
+        name: document.getElementById('s_name').value.trim(),
+        department: document.getElementById('s_dept').value.trim(),
+        designation: document.getElementById('s_desig').value,
+        experience_years: parseInt(document.getElementById('s_exp').value),
+        year, teaching_hours: parseFloat(document.getElementById('s_thours').value),
+        publications: parseInt(document.getElementById('s_pub').value || 0),
+        citations: parseInt(document.getElementById('s_cit').value || 0),
+        projects_completed: parseInt(document.getElementById('s_proj').value || 0),
+        students_mentored: parseInt(document.getElementById('s_ment').value || 0),
+        teaching_rating: parseFloat(document.getElementById('s_teach').value),
+        student_feedback: parseFloat(document.getElementById('s_feed').value),
+        research_score: parseFloat(document.getElementById('s_res').value),
+        administration_score: parseFloat(document.getElementById('s_adm').value),
+      };
+      try {
+        const r = await fetch(`${API}/api/faculty/setup-profile`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const d = await r.json();
+        if (!r.ok) { showSetupAlert(d.error, 'error'); btn.disabled = false; btn.textContent = '✅ Submit Profile'; return; }
+        await uploadAllDocuments(year);
+        document.getElementById('setupModal').classList.remove('show');
+        toast(`✅ Profile created! Faculty ID: ${d.faculty_id}`, 'success');
+        await loadData();
+      } catch (e) { showSetupAlert('Network error. Please try again.', 'error'); btn.disabled = false; btn.textContent = '✅ Submit Profile'; }
+    }
+
+    async function uploadAllDocuments(year) {
+      for (const id of pubEntries) {
+        const title = document.getElementById(`${id}_title`)?.value.trim();
+        const journal = document.getElementById(`${id}_journal`)?.value.trim();
+        const date = document.getElementById(`${id}_date`)?.value.trim();
+        const doi = document.getElementById(`${id}_doi`)?.value.trim();
+        const file = fileStore[`${id}_file`];
+        if (!title) continue;
+        let b64 = '', fname = '', ftype = '';
+        if (file) { b64 = await fileToBase64(file); fname = file.name; ftype = file.type; }
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: 'publication', title, journal_name: journal, publication_date: date, description: doi, year, file_b64: b64, file_name: fname, file_type: ftype }) });
+      }
+      for (const id of projEntries) {
+        const title = document.getElementById(`${id}_title`)?.value.trim();
+        const date = document.getElementById(`${id}_date`)?.value.trim();
+        const desc = document.getElementById(`${id}_desc`)?.value.trim();
+        const file = fileStore[`${id}_file`];
+        if (!title) continue;
+        let b64 = '', fname = '', ftype = '';
+        if (file) { b64 = await fileToBase64(file); fname = file.name; ftype = file.type; }
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: 'project', title, publication_date: date, description: desc, year, file_b64: b64, file_name: fname, file_type: ftype }) });
+      }
+      const proofs = [
+        { id: 'teach_proof', doc_type: 'teaching_proof', title: 'Teaching Feedback Report' },
+        { id: 'res_proof', doc_type: 'research_proof', title: 'Research Score Proof' },
+        { id: 'adm_proof', doc_type: 'admin_proof', title: 'Administration Score Proof' },
+      ];
+      for (const p of proofs) {
+        const file = fileStore[p.id]; if (!file) continue;
+        const b64 = await fileToBase64(file);
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: p.doc_type, title: p.title, year, file_b64: b64, file_name: file.name, file_type: file.type }) });
+      }
+    }
+
+    function showSetupAlert(msg, type) { const el = document.getElementById('setupAlert'); el.textContent = msg; el.className = `alert ${type} show`; }
+
+    // ── ADD PERFORMANCE ───────────────────────────────────────────
+    function openAddPerformance() { document.getElementById('addPerfModal').classList.add('show'); }
+
+    function closeAddPerfModal() {
+      document.getElementById('addPerfModal').classList.remove('show');
+      document.getElementById('ap_pubList').innerHTML = '';
+      document.getElementById('ap_projList').innerHTML = '';
+      apPubEntries = []; apProjEntries = []; apCount = 0;
+      ['ap_teach', 'ap_feed', 'ap_res', 'ap_adm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = 3; });
+      ['arv_teach', 'arv_feed', 'arv_res', 'arv_adm'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '3.0'; });
+      ['ap_teach_proof_disp', 'ap_res_proof_disp', 'ap_adm_proof_disp'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
+      document.getElementById('addPerfAlert').classList.remove('show');
+    }
+
+    async function submitAddPerformance() {
+      const btn = document.getElementById('addPerfBtn');
+      btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving...';
+      const year = parseInt(document.getElementById('ap_year').value);
+      const payload = {
+        year,
+        teaching_hours: parseFloat(document.getElementById('ap_thours').value || 16),
+        publications: parseInt(document.getElementById('ap_pub').value || 0),
+        citations: parseInt(document.getElementById('ap_cit').value || 0),
+        projects_completed: parseInt(document.getElementById('ap_proj').value || 0),
+        students_mentored: parseInt(document.getElementById('ap_ment').value || 0),
+        experience_years: parseInt(document.getElementById('ap_exp').value || 0),
+        teaching_rating: parseFloat(document.getElementById('ap_teach').value),
+        student_feedback: parseFloat(document.getElementById('ap_feed').value),
+        research_score: parseFloat(document.getElementById('ap_res').value),
+        administration_score: parseFloat(document.getElementById('ap_adm').value),
+      };
+      try {
+        const r = await fetch(`${API}/api/faculty/add-performance`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const d = await r.json();
+        if (!r.ok) { const el = document.getElementById('addPerfAlert'); el.textContent = d.error; el.className = 'alert error show'; return; }
+        await uploadApDocuments(year);
+        closeAddPerfModal();
+        toast(`✅ Year ${year} saved! Score: ${d.overall_score} (${d.category})`, 'success');
+        await loadData();
+      } catch (e) { const el = document.getElementById('addPerfAlert'); el.textContent = 'Network error. Please try again.'; el.className = 'alert error show'; }
+      finally { btn.disabled = false; btn.textContent = '💾 Save Record'; }
+    }
+
+    async function uploadApDocuments(year) {
+      for (const id of apPubEntries) {
+        const title = document.getElementById(`${id}_title`)?.value.trim();
+        const journal = document.getElementById(`${id}_journal`)?.value.trim();
+        const date = document.getElementById(`${id}_date`)?.value.trim();
+        const doi = document.getElementById(`${id}_doi`)?.value.trim();
+        const file = fileStore[`${id}_file`];
+        if (!title) continue;
+        let b64 = '', fname = '', ftype = '';
+        if (file) { b64 = await fileToBase64(file); fname = file.name; ftype = file.type; }
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: 'publication', title, journal_name: journal, publication_date: date, description: doi, year, file_b64: b64, file_name: fname, file_type: ftype }) });
+      }
+      for (const id of apProjEntries) {
+        const title = document.getElementById(`${id}_title`)?.value.trim();
+        const date = document.getElementById(`${id}_date`)?.value.trim();
+        const desc = document.getElementById(`${id}_desc`)?.value.trim();
+        const file = fileStore[`${id}_file`];
+        if (!title) continue;
+        let b64 = '', fname = '', ftype = '';
+        if (file) { b64 = await fileToBase64(file); fname = file.name; ftype = file.type; }
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: 'project', title, publication_date: date, description: desc, year, file_b64: b64, file_name: fname, file_type: ftype }) });
+      }
+      const proofs = [
+        { id: 'ap_teach_proof', doc_type: 'teaching_proof', title: 'Teaching Feedback Report' },
+        { id: 'ap_res_proof', doc_type: 'research_proof', title: 'Research Score Proof' },
+        { id: 'ap_adm_proof', doc_type: 'admin_proof', title: 'Administration Score Proof' },
+      ];
+      for (const p of proofs) {
+        const file = fileStore[p.id]; if (!file) continue;
+        const b64 = await fileToBase64(file);
+        await fetch(`${API}/api/faculty/upload-document`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ doc_type: p.doc_type, title: p.title, year, file_b64: b64, file_name: file.name, file_type: file.type }) });
+      }
+    }
+
+    // ── DOCUMENTS TABLE ───────────────────────────────────────────
+    async function loadDocuments() {
+      const fid = profileData?.faculty_id; if (!fid) return;
+      const d = await fetch(`${API}/api/faculty/documents/${fid}`, { credentials: 'include' }).then(r => r.json());
+      const docs = d.documents || [];
+      const tbody = document.getElementById('docsTableBody');
+      if (!docs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:#a0aab4">No documents submitted yet</td></tr>'; return; }
+      const typeLabels = { 'publication': '📚 Publication', 'project': '🔬 Project', 'teaching_proof': '📝 Teaching Proof', 'research_proof': '🔭 Research Proof', 'admin_proof': '🏛️ Admin Proof' };
+      tbody.innerHTML = docs.map(doc => {
+        const statusCls = doc.verified_status === 'verified' ? 'status-verified' : doc.verified_status === 'rejected' ? 'status-rejected' : 'status-pending';
+        const safeTitle = (doc.title || '').replace(/'/g, "\\'");
+        const safeFile = (doc.file_name || 'document').replace(/'/g, "\\'");
+        const fileBtn = doc.has_file
+          ? `<button onclick="viewMyFile(${doc.id},'${safeTitle}','${safeFile}')"
+           style="background:#e8f0fe;border:1px solid #c7deff;color:#1a56db;padding:4px 10px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600">
+           📄 View
+         </button>`
+          : '<span style="color:#a0aab4;font-size:12px">No file</span>';
+        const detail = doc.journal_name ? `${doc.journal_name}${doc.publication_date ? ', ' + doc.publication_date : ''}` : doc.publication_date || doc.description || '—';
+        return `<tr>
+      <td>${typeLabels[doc.doc_type] || doc.doc_type}</td>
+      <td style="font-weight:500;max-width:200px">${doc.title}</td>
+      <td>${doc.year}</td>
+      <td style="color:#6b7a8d;font-size:12px;max-width:180px">${String(detail).slice(0, 60)}${String(detail).length > 60 ? '...' : ''}</td>
+      <td>${fileBtn}</td>
+      <td><span class="${statusCls}">${doc.verified_status.charAt(0).toUpperCase() + doc.verified_status.slice(1)}</span></td>
+      <td style="color:${doc.verified_status === 'rejected' ? '#c0392b' : '#6b7a8d'};font-size:12px">${doc.admin_remark || '—'}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────
+    async function init() {
+      const u = await fetch(`${API}/api/auth/user`, { credentials: 'include' }).then(r => r.json());
+      if (!u.user) return location.href = '/';
+      document.getElementById('userName').textContent = u.user.full_name || u.user.username;
+      document.getElementById('userDept').textContent = u.user.department || 'Faculty';
+      document.getElementById('s_name').value = u.user.full_name || '';
+      const chk = await fetch(`${API}/api/faculty/check-profile`, { credentials: 'include' }).then(r => r.json());
+      if (chk.needs_setup) { document.getElementById('setupModal').classList.add('show'); return; }
+      await loadData();
+    }
+
+    async function loadData() {
+      const d = await fetch(`${API}/api/faculty/profile`, { credentials: 'include' }).then(r => r.json());
+      profileData = d.faculty || {};
+      perfs = (d.performance || []).sort((a, b) => a.year - b.year);
+      renderProfile(); renderStats(); renderOverviewCharts(); renderPerfTable(); loadSuggestions(); loadDocuments();
+    }
+
+    function renderProfile() {
+      const f = profileData;
+      document.getElementById('profileName').textContent = f.name || '—';
+      document.getElementById('profileMeta').textContent = f.email || '—';
+      document.getElementById('profileDept').textContent = f.department || '—';
+      document.getElementById('profileDesig').textContent = f.designation || '—';
+      const exp = perfs.length ? perfs[perfs.length - 1].experience_years : '—';
+      document.getElementById('profileExp').textContent = `${exp} yrs experience`;
+    }
+
+    function renderStats() {
+      const scores = perfs.map(p => p.overall_score).filter(Boolean);
+      document.getElementById('statBest').textContent = scores.length ? Math.max(...scores).toFixed(2) : '—';
+      document.getElementById('statPubs').textContent = perfs.reduce((a, p) => a + (p.publications || 0), 0);
+      document.getElementById('statCit').textContent = perfs.reduce((a, p) => a + (p.citations || 0), 0);
+      document.getElementById('statMent').textContent = perfs.reduce((a, p) => a + (p.students_mentored || 0), 0);
+    }
+
+    function renderOverviewCharts() {
+      const years = perfs.map(p => p.year), scores = perfs.map(p => p.overall_score), latest = perfs[perfs.length - 1] || {};
+      destroyChart('scoreTrendChart');
+      charts.scoreTrendChart = new Chart(document.getElementById('scoreTrendChart'), { type: 'line', data: { labels: years, datasets: [{ label: 'Overall Score', data: scores, borderColor: '#1a56db', backgroundColor: 'rgba(26,86,219,.07)', fill: true, tension: .35, pointRadius: 5, pointBackgroundColor: '#1a56db' }] }, options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 5 } } } });
+      destroyChart('radarChart');
+      charts.radarChart = new Chart(document.getElementById('radarChart'), { type: 'radar', data: { labels: ['Teaching', 'Research', 'Admin', 'Feedback', 'Publications'], datasets: [{ label: 'Latest Year', data: [latest.teaching_rating || 0, latest.research_score || 0, latest.administration_score || 0, latest.student_feedback || 0, Math.min((latest.publications || 0) / 5, 5)], backgroundColor: 'rgba(26,86,219,.1)', borderColor: '#1a56db', pointBackgroundColor: '#1a56db', borderWidth: 2, pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { ticks: { color: '#6b7a8d', backdropColor: 'transparent', font: { size: 9 } }, grid: { color: '#edf0f4' }, pointLabels: { color: '#374151', font: { size: 11 } }, min: 0, max: 5 } } } });
+    }
+
+    function renderPerfTable() {
+      const tbody = document.getElementById('perfTableBody');
+      if (!perfs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:28px;color:#a0aab4">No records yet. Click "+ Add Year Data".</td></tr>'; return; }
+      tbody.innerHTML = [...perfs].reverse().map(p => {
+        const cat = p.performance_category || '—';
+        const cls = cat.startsWith('Need') ? 'perf-bad' : (cat === 'Excellent' || cat === 'Good') ? 'perf-good' : 'perf-avg';
+        return `<tr><td style="color:#1a56db;font-weight:600">${p.year}</td><td style="color:#1a7a4a;font-weight:600">${p.overall_score || '—'}</td><td>${p.teaching_rating || '—'}</td><td>${p.research_score || '—'}</td><td>${p.administration_score || '—'}</td><td>${p.publications || 0}</td><td>${p.citations || 0}</td><td>${p.students_mentored || 0}</td><td><span class="perf-badge ${cls}">${cat}</span></td></tr>`;
+      }).join('');
+    }
+
+    function renderTrendCharts() {
+      const years = perfs.map(p => p.year), teaching = perfs.map(p => p.teaching_rating), research = perfs.map(p => p.research_score), admin = perfs.map(p => p.administration_score), pubs = perfs.map(p => p.publications || 0), cits = perfs.map(p => p.citations || 0), scores = perfs.map(p => p.overall_score);
+      destroyChart('trTrendChart');
+      charts.trTrendChart = new Chart(document.getElementById('trTrendChart'), { type: 'line', data: { labels: years, datasets: [{ label: 'Teaching', data: teaching, borderColor: '#1a56db', backgroundColor: 'transparent', tension: .3, pointRadius: 4, borderWidth: 2 }, { label: 'Research', data: research, borderColor: '#1a7a4a', backgroundColor: 'transparent', tension: .3, pointRadius: 4, borderWidth: 2 }, { label: 'Admin', data: admin, borderColor: '#d97706', backgroundColor: 'transparent', tension: .3, pointRadius: 4, borderWidth: 2 }] }, options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 5 } } } });
+      destroyChart('pubTrendChart');
+      charts.pubTrendChart = new Chart(document.getElementById('pubTrendChart'), { type: 'bar', data: { labels: years, datasets: [{ label: 'Publications', data: pubs, backgroundColor: 'rgba(26,86,219,.7)', borderRadius: 4 }, { label: 'Citations', data: cits, backgroundColor: 'rgba(26,122,74,.7)', borderRadius: 4 }] }, options: chartOpts });
+      destroyChart('allMetricsChart');
+      charts.allMetricsChart = new Chart(document.getElementById('allMetricsChart'), { type: 'line', data: { labels: years, datasets: [{ label: 'Overall', data: scores, borderColor: '#1a56db', backgroundColor: 'rgba(26,86,219,.06)', fill: true, tension: .3, pointRadius: 3, borderWidth: 2 }, { label: 'Teaching', data: teaching, borderColor: '#1a7a4a', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 1.5 }, { label: 'Research', data: research, borderColor: '#d97706', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 1.5 }, { label: 'Admin', data: admin, borderColor: '#6b21a8', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 1.5 }] }, options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 5 } } } });
+    }
+
+    async function loadSuggestions() {
+      const fid = profileData?.faculty_id; if (!fid) return;
+      const d = await fetch(`${API}/api/faculty/suggestions/${fid}`, { credentials: 'include' }).then(r => r.json());
+      const el = document.getElementById('suggestContent');
+      if (!d.year_analyzed) { el.innerHTML = '<div style="text-align:center;padding:40px;color:#a0aab4">No performance data available.</div>'; return; }
+      const pc = p => p?.toLowerCase() === 'high' ? 'high' : p?.toLowerCase() === 'medium' ? 'medium' : 'low';
+      const pcolor = { High: '#e53e3e', Medium: '#d97706', Low: '#1a56db' };
+      let html = `<div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+    <div class="stat-card" style="--c:#1a7a4a;flex:1;min-width:130px"><div class="icon">⭐</div><div class="value">${d.overall_score || '—'}</div><div class="label">Score (${d.year_analyzed})</div></div>
+    <div class="stat-card" style="--c:#1a56db;flex:1;min-width:130px"><div class="icon">🏆</div><div class="value" style="font-size:16px">${d.performance_category || '—'}</div><div class="label">Category</div></div>
+    <div class="stat-card" style="--c:#d97706;flex:1;min-width:130px"><div class="icon">💡</div><div class="value">${d.suggestions?.length || 0}</div><div class="label">Suggestions</div></div>
+    <div class="stat-card" style="--c:#1a7a4a;flex:1;min-width:130px"><div class="icon">✅</div><div class="value">${d.strengths?.length || 0}</div><div class="label">Strengths</div></div>
+  </div>`;
+      if (d.strengths?.length) html += `<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#1a7a4a">✅ Your Strengths</h3><div class="suggest-grid">` + d.strengths.map(s => `<div class="suggest-card strength"><div class="suggest-area" style="color:#1a7a4a">Strength</div><div class="suggest-issue">${s}</div></div>`).join('') + '</div>';
+      if (d.suggestions?.length) html += `<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#d97706">💡 Areas to Improve</h3><div class="suggest-grid">` + d.suggestions.map(s => `<div class="suggest-card ${pc(s.priority)}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div class="suggest-area" style="color:${pcolor[s.priority] || '#1a56db'}">${s.area}</div><span style="padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;background:#f0f4f8;color:${pcolor[s.priority] || '#1a56db'}">${s.priority}</span></div><div class="suggest-issue">⚠ ${s.issue}</div><div class="suggest-text">💡 ${s.suggestion}</div></div>`).join('') + '</div>';
+      if (d.missing_data?.length) html += `<h3 style="font-size:14px;font-weight:700;margin-bottom:12px;color:#6b7a8d">📭 Missing Info</h3><div class="suggest-grid">` + d.missing_data.map(m => `<div class="suggest-card missing"><div class="suggest-area" style="color:#a0aab4">Missing</div><div class="suggest-issue">${m}</div><div class="suggest-text">Update this to improve evaluation.</div></div>`).join('') + '</div>';
+      el.innerHTML = html;
+    }
+
+    const pageTitles = {
+      overview: ['Overview', 'Your performance dashboard'],
+      performance: ['My Performance', 'Year-wise records'],
+      documents: ['My Documents', 'Submitted proof documents'],
+      trends: ['Trends & Charts', 'Performance analytics'],
+      suggestions: ['AI Suggestions', 'Personalized recommendations']
+    };
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const cap = name.charAt(0).toUpperCase() + name.slice(1);
+      document.getElementById('page' + cap)?.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => { if (n.textContent.toLowerCase().includes(name.slice(0, 5).toLowerCase())) n.classList.add('active'); });
+      const [title, sub] = pageTitles[name] || [name, ''];
+      document.getElementById('pageTitle').textContent = title;
+      document.getElementById('pageSub').textContent = sub;
+      if (name === 'trends') setTimeout(renderTrendCharts, 50);
+      if (name === 'documents') loadDocuments();
+    }
+
+    function toast(msg, type = 'success') { const el = document.getElementById('toast'); el.textContent = msg; el.className = `show ${type}`; setTimeout(() => el.classList.remove('show'), 4000); }
+    async function logout() { await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' }); location.href = '/'; }
+    document.getElementById('addPerfModal').addEventListener('click', e => { if (e.target === document.getElementById('addPerfModal')) closeAddPerfModal(); });
+    init();
+  </script>
+</body>
+
+</html>

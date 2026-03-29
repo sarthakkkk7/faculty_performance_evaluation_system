@@ -1,0 +1,4 @@
+.env
+label_encoder.pkl
+ml_model.pkl
+scaler.pkl

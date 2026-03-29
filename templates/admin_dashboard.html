@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Faculty Performance System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      display: flex;
+      min-height: 100vh
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      border-right: 1px solid #dde3ea;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 100
+    }
+
+    .sidebar-logo {
+      padding: 18px 16px;
+      border-bottom: 1px solid #edf0f4;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: #1a56db;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      color: #fff
+    }
+
+    .logo-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a2332;
+      line-height: 1.3
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: #6b7a8d
+    }
+
+    nav {
+      padding: 12px 10px;
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .nav-section {
+      font-size: 10px;
+      color: #a0aab4;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 10px 8px 5px;
+      font-weight: 600
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #4a5568;
+      margin-bottom: 1px;
+      transition: all .15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: 'Inter', sans-serif
+    }
+
+    .nav-item:hover {
+      background: #f0f4f8;
+      color: #1a2332
+    }
+
+    .nav-item.active {
+      background: #e8f0fe;
+      color: #1a56db;
+      font-weight: 600
+    }
+
+    .nav-item .icon {
+      font-size: 15px;
+      width: 18px;
+      flex-shrink: 0
+    }
+
+    .sidebar-footer {
+      padding: 14px;
+      border-top: 1px solid #edf0f4
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      background: #f7faff;
+      border: 1px solid #dde3ea
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: #1a56db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0
+    }
+
+    .user-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a2332;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .user-role {
+      font-size: 10px;
+      color: #6b7a8d
+    }
+
+    .logout-btn {
+      background: none;
+      border: none;
+      color: #a0aab4;
+      cursor: pointer;
+      font-size: 15px;
+      padding: 3px;
+      border-radius: 4px;
+      transition: color .2s
+    }
+
+    .logout-btn:hover {
+      color: #e53e3e
+    }
+
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column
+    }
+
+    .topbar {
+      padding: 14px 28px;
+      border-bottom: 1px solid #dde3ea;
+      background: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .page-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a2332
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: #6b7a8d;
+      margin-top: 2px
+    }
+
+    .badge {
+      background: #e8f0fe;
+      color: #1a56db;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid #c7deff
+    }
+
+    .content {
+      padding: 22px 28px;
+      flex: 1
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      padding: 18px;
+      border-top: 3px solid var(--c, #1a56db)
+    }
+
+    .stat-card .icon {
+      font-size: 22px;
+      margin-bottom: 8px
+    }
+
+    .stat-card .value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--c, #1a56db)
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: #6b7a8d;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      font-weight: 600
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px
+    }
+
+    .charts-row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px
+    }
+
+    .chart-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      padding: 18px
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2332;
+      margin-bottom: 3px
+    }
+
+    .chart-sub {
+      font-size: 11px;
+      color: #6b7a8d;
+      margin-bottom: 14px
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 200px
+    }
+
+    .year-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 18px
+    }
+
+    .year-tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      border: 1.5px solid #dde3ea;
+      color: #6b7a8d;
+      transition: all .18s;
+      font-family: 'Inter', sans-serif
+    }
+
+    .year-tab.active {
+      background: #1a56db;
+      color: #fff;
+      border-color: #1a56db
+    }
+
+    .year-tab:hover:not(.active) {
+      border-color: #1a56db;
+      color: #1a56db
+    }
+
+    .table-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 18px
+    }
+
+    .table-toolbar {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #edf0f4;
+      flex-wrap: wrap;
+      background: #fafbfc
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 180px;
+      padding: 8px 12px;
+      background: #fff;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      color: #1a2332;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      outline: none
+    }
+
+    .search-box:focus {
+      border-color: #1a56db
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      background: #fff;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      color: #4a5568;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      outline: none
+    }
+
+    .filter-select:focus {
+      border-color: #1a56db
+    }
+
+    .btn-sm {
+      padding: 7px 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      transition: all .18s
+    }
+
+    .btn-blue {
+      background: #1a56db;
+      color: #fff
+    }
+
+    .btn-blue:hover {
+      background: #1446b8
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #4a5568;
+      border: 1.5px solid #dde3ea
+    }
+
+    .btn-outline:hover {
+      background: #f7faff;
+      border-color: #b0c4de
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      color: #6b7a8d;
+      text-align: left;
+      background: #fafbfc;
+      border-bottom: 1px solid #edf0f4
+    }
+
+    td {
+      padding: 11px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid #f3f5f7;
+      color: #1a2332
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: #f7faff
+    }
+
+    .perf-badge {
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .perf-good {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #b2f0d4
+    }
+
+    .perf-avg {
+      background: #fffbea;
+      color: #92600a;
+      border: 1px solid #fde68a
+    }
+
+    .perf-bad {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #ffc7c7
+    }
+
+    .action-btn {
+      background: #f0f4f8;
+      border: 1px solid #dde3ea;
+      color: #4a5568;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all .18s
+    }
+
+    .action-btn:hover {
+      background: #1a56db;
+      color: #fff;
+      border-color: #1a56db
+    }
+
+    .status-pending {
+      background: #fffbea;
+      color: #92600a;
+      border: 1px solid #fde68a;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .status-verified {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #b2f0d4;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .status-rejected {
+      background: #fff0f0;
+      color: #c0392b;
+      border: 1px solid #ffc7c7;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .suggest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px
+    }
+
+    .suggest-card {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 9px;
+      padding: 15px
+    }
+
+    .suggest-card.high {
+      border-left: 3px solid #e53e3e
+    }
+
+    .suggest-card.medium {
+      border-left: 3px solid #d97706
+    }
+
+    .suggest-card.low {
+      border-left: 3px solid #1a56db
+    }
+
+    .suggest-card.strength {
+      border-left: 3px solid #1a7a4a
+    }
+
+    .suggest-card.missing {
+      border-left: 3px solid #a0aab4
+    }
+
+    .suggest-area {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 5px
+    }
+
+    .suggest-issue {
+      font-size: 13px;
+      color: #1a2332;
+      margin-bottom: 5px;
+      font-weight: 500
+    }
+
+    .suggest-text {
+      font-size: 12px;
+      color: #6b7a8d;
+      line-height: 1.6
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a2332
+    }
+
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 200;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal.show {
+      display: flex
+    }
+
+    .modal-box {
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 12px;
+      width: min(780px, 95vw);
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 26px
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px
+    }
+
+    .modal-close {
+      background: #f0f4f8;
+      border: 1px solid #dde3ea;
+      color: #6b7a8d;
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .modal-close:hover {
+      background: #e53e3e;
+      color: #fff;
+      border-color: #e53e3e
+    }
+
+    .modal-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px
+    }
+
+    .field-block label {
+      display: block;
+      font-size: 11px;
+      color: #6b7a8d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 5px
+    }
+
+    .pred-input {
+      width: 100%;
+      padding: 9px 12px;
+      background: #fff;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      color: #1a2332;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      outline: none
+    }
+
+    .pred-input:focus {
+      border-color: #1a56db
+    }
+
+    /* REJECT REMARK MODAL */
+    .remark-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .4);
+      z-index: 300;
+      align-items: center;
+      justify-content: center
+    }
+
+    .remark-modal.show {
+      display: flex
+    }
+
+    .remark-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px;
+      width: min(440px, 94vw);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .15)
+    }
+
+    .remark-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .remark-box p {
+      font-size: 13px;
+      color: #6b7a8d;
+      margin-bottom: 16px
+    }
+
+    .remark-box textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #dde3ea;
+      border-radius: 7px;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+      color: #1a2332
+    }
+
+    .remark-box textarea:focus {
+      border-color: #1a56db
+    }
+
+    .remark-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      border: none;
+      transition: all .18s
+    }
+
+    .btn-primary {
+      background: #1a56db;
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      background: #1446b8
+    }
+
+    .btn-danger {
+      background: #e53e3e;
+      color: #fff
+    }
+
+    .btn-danger:hover {
+      background: #c0392b
+    }
+
+    .btn-cancel {
+      background: #fff;
+      color: #4a5568;
+      border: 1.5px solid #dde3ea
+    }
+
+    .btn-cancel:hover {
+      background: #f7faff
+    }
+
+    /* FILE VIEWER MODAL */
+    .file-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      z-index: 400;
+      align-items: center;
+      justify-content: center;
+      padding: 20px
+    }
+
+    .file-modal.show {
+      display: flex
+    }
+
+    .file-modal-box {
+      background: #fff;
+      border-radius: 12px;
+      width: min(900px, 96vw);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .25);
+      overflow: hidden
+    }
+
+    .file-modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #edf0f4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafbfc;
+      flex-shrink: 0
+    }
+
+    .file-modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a2332
+    }
+
+    .file-modal-meta {
+      font-size: 12px;
+      color: #6b7a8d;
+      margin-top: 2px
+    }
+
+    .file-modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4f8
+    }
+
+    .file-modal-body iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 8px;
+      background: #fff
+    }
+
+    .file-modal-body img {
+      max-width: 100%;
+      max-height: 70vh;
+      border-radius: 8px;
+      border: 1px solid #dde3ea;
+      object-fit: contain
+    }
+
+    .file-modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid #edf0f4;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fafbfc;
+      flex-shrink: 0
+    }
+
+    .file-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #dde3ea;
+      border-top-color: #1a56db;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 12px
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      background: #fff;
+      border: 1px solid #dde3ea;
+      border-radius: 9px;
+      padding: 11px 16px;
+      font-size: 13px;
+      max-width: 300px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .1);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    #toast.success {
+      border-left: 3px solid #1a7a4a
+    }
+
+    #toast.error {
+      border-left: 3px solid #e53e3e
+    }
+
+    @media(max-width:900px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .charts-row {
+        grid-template-columns: 1fr
+      }
+
+      .charts-row3 {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .suggest-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">📊</div>
+      <div>
+        <div class="logo-name">Faculty System</div>
+        <div class="logo-sub">Admin Panel</div>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-section">Main</div>
+      <button class="nav-item active" onclick="showPage('overview')"><span class="icon">🏠</span>Overview</button>
+      <button class="nav-item" onclick="showPage('verify')"><span class="icon">✅</span>Verify Documents</button>
+      <button class="nav-item" onclick="showPage('yearly')"><span class="icon">📅</span>Yearly Reports</button>
+      <button class="nav-item" onclick="showPage('departments')"><span class="icon">🏢</span>Departments</button>
+      <div class="nav-section">Management</div>
+      <button class="nav-item" onclick="showPage('faculty')"><span class="icon">👥</span>Faculty List</button>
+      <button class="nav-item" onclick="showPage('performance')"><span class="icon">📈</span>Performance Data</button>
+      <button class="nav-item" onclick="showPage('suggestions')"><span class="icon">💡</span>AI Suggestions</button>
+      <div class="nav-section">Tools</div>
+      <button class="nav-item" onclick="showPage('predict')"><span class="icon">🤖</span>ML Predictor</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">👨‍💼</div>
+        <div style="flex:1;min-width:0">
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role">Administrator</div>
+        </div>
+        <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="pageTitle">Overview</div>
+        <div class="page-subtitle" id="pageSubtitle">Faculty Performance Dashboard</div>
+      </div>
+      <span class="badge">Admin</span>
+    </div>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="pageOverview">
+        <div class="stats-grid">
+          <div class="stat-card" style="--c:#1a56db">
+            <div class="icon">👥</div>
+            <div class="value" id="statFaculty">—</div>
+            <div class="label">Total Faculty</div>
+          </div>
+          <div class="stat-card" style="--c:#1a7a4a">
+            <div class="icon">⭐</div>
+            <div class="value" id="statAvgScore">—</div>
+            <div class="label">Avg Score</div>
+          </div>
+          <div class="stat-card" style="--c:#d97706">
+            <div class="icon">📋</div>
+            <div class="value" id="statRecords">—</div>
+            <div class="label">Total Records</div>
+          </div>
+          <div class="stat-card" style="--c:#6b21a8">
+            <div class="icon">🤖</div>
+            <div class="value" id="statAccuracy">—</div>
+            <div class="label">ML Accuracy</div>
+          </div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Performance Over Years</div>
+            <div class="chart-sub">Average overall scores per academic year</div>
+            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Performance Distribution</div>
+            <div class="chart-sub">Category breakdown</div>
+            <div class="chart-wrap"><canvas id="distChart"></canvas></div>
+          </div>
+        </div>
+        <div class="charts-row3">
+          <div class="chart-card">
+            <div class="chart-title">Teaching vs Research</div>
+            <div class="chart-sub">Score comparison by year</div>
+            <div class="chart-wrap"><canvas id="trChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Publications per Year</div>
+            <div class="chart-sub">Total publications</div>
+            <div class="chart-wrap"><canvas id="pubChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Students Mentored</div>
+            <div class="chart-sub">Annual mentoring count</div>
+            <div class="chart-wrap"><canvas id="mentorChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VERIFY DOCUMENTS -->
+      <div class="page" id="pageVerify">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card" style="--c:#d97706">
+            <div class="icon">⏳</div>
+            <div class="value" id="vStatPending">—</div>
+            <div class="label">Pending Review</div>
+          </div>
+          <div class="stat-card" style="--c:#1a7a4a">
+            <div class="icon">✅</div>
+            <div class="value" id="vStatVerified">—</div>
+            <div class="label">Verified</div>
+          </div>
+          <div class="stat-card" style="--c:#e53e3e">
+            <div class="icon">❌</div>
+            <div class="value" id="vStatRejected">—</div>
+            <div class="label">Rejected</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <span style="font-size:14px;font-weight:600;color:#1a2332">📂 Faculty Document Verification</span>
+            <select class="filter-select" id="docStatusFilter" onchange="loadAdminDocs()">
+              <option value="">All Documents</option>
+              <option value="pending">⏳ Pending</option>
+              <option value="verified">✅ Verified</option>
+              <option value="rejected">❌ Rejected</option>
+            </select>
+            <select class="filter-select" id="docTypeFilter" onchange="loadAdminDocs()">
+              <option value="">All Types</option>
+              <option value="publication">📚 Publications</option>
+              <option value="project">🔬 Projects</option>
+              <option value="teaching_proof">📝 Teaching Proof</option>
+              <option value="research_proof">🔭 Research Proof</option>
+              <option value="admin_proof">🏛️ Admin Proof</option>
+            </select>
+            <button class="btn-sm btn-outline" onclick="loadAdminDocs()">🔄 Refresh</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Faculty</th>
+                <th>Dept</th>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Details</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="verifyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- YEARLY -->
+      <div class="page" id="pageYearly">
+        <div id="yearTabs" class="year-tabs"></div>
+        <div class="charts-row">
+          <div class="chart-card">
+            <div class="chart-title">Score Breakdown — <span id="selectedYearLabel">—</span></div>
+            <div class="chart-sub">Teaching, Research, Administration metrics</div>
+            <div class="chart-wrap"><canvas id="yearBreakdownChart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Category Distribution</div>
+            <div class="chart-sub">Performance categories for selected year</div>
+            <div class="chart-wrap"><canvas id="yearCatChart"></canvas></div>
+          </div>
+        </div>
+        <div class="chart-card" style="margin-bottom:18px">
+          <div class="chart-title">Year-on-Year Trend</div>
+          <div class="chart-sub">All metrics across all years</div>
+          <div class="chart-wrap" style="height:230px"><canvas id="allYearsChart"></canvas></div>
+        </div>
+        <div id="yearStatsTable"></div>
+      </div>
+
+      <!-- DEPARTMENTS -->
+      <div class="page" id="pageDepartments">
+        <div class="chart-card" style="margin-bottom:18px">
+          <div class="chart-title">Department Performance Comparison</div>
+          <div class="chart-sub">Average scores by department</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="deptChart"></canvas></div>
+        </div>
+        <div class="table-card">
+          <div class="table-toolbar"><span style="font-size:14px;font-weight:600;color:#1a2332">Department
+              Summary</span></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Count</th>
+                <th>Avg Score</th>
+                <th>Avg Teaching</th>
+                <th>Avg Research</th>
+                <th>Publications</th>
+              </tr>
+            </thead>
+            <tbody id="deptTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FACULTY -->
+      <div class="page" id="pageFaculty">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <input class="search-box" placeholder="🔍 Search faculty..." oninput="filterFaculty(this.value)">
+            <select class="filter-select" id="deptFilter"
+              onchange="filterFaculty(document.querySelector('.search-box').value)">
+              <option value="">All Departments</option>
+            </select>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Faculty ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="facultyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE -->
+      <div class="page" id="pagePerformance">
+        <div class="table-card">
+          <div class="table-toolbar">
+            <select class="filter-select" id="yearFilter" onchange="loadPerformanceTable()">
+              <option value="">All Years</option>
+            </select>
+            <select class="filter-select" id="deptFilter2" onchange="loadPerformanceTable()">
+              <option value="">All Departments</option>
+            </select>
+            <button class="btn-sm btn-outline" onclick="exportCSV()">📥 Export CSV</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Dept</th>
+                <th>Year</th>
+                <th>Overall</th>
+                <th>Teaching</th>
+                <th>Research</th>
+                <th>Admin</th>
+                <th>Category</th>
+              </tr>
+            </thead>
+            <tbody id="perfTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <div class="page" id="pageSuggestions">
+        <div class="table-card" style="margin-bottom:18px">
+          <div class="table-toolbar">
+            <span style="font-size:13px;font-weight:600;color:#1a2332;margin-right:10px">Select Faculty:</span>
+            <select class="filter-select" id="suggestFacSelect" onchange="loadSuggestions()" style="flex:1">
+              <option value="">— Choose a faculty member —</option>
+            </select>
+          </div>
+        </div>
+        <div id="suggestResult"></div>
+      </div>
+
+      <!-- ML PREDICTOR -->
+      <div class="page" id="pagePredict">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="chart-card">
+            <div class="chart-title" style="margin-bottom:16px;font-size:14px">Input Performance Metrics</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="field-block"><label>Publications</label><input class="pred-input" id="pPub" type="number"
+                  value="3" min="0"></div>
+              <div class="field-block"><label>Citations</label><input class="pred-input" id="pCit" type="number"
+                  value="20" min="0"></div>
+              <div class="field-block"><label>Projects Completed</label><input class="pred-input" id="pProj"
+                  type="number" value="2" min="0"></div>
+              <div class="field-block"><label>Students Mentored</label><input class="pred-input" id="pMent"
+                  type="number" value="15" min="0"></div>
+              <div class="field-block"><label>Teaching Rating (1-5)</label><input class="pred-input" id="pTeach"
+                  type="number" value="3.5" min="1" max="5" step="0.1"></div>
+              <div class="field-block"><label>Research Score (1-5)</label><input class="pred-input" id="pRes"
+                  type="number" value="3.0" min="1" max="5" step="0.1"></div>
+              <div class="field-block"><label>Admin Score (1-5)</label><input class="pred-input" id="pAdm" type="number"
+                  value="3.0" min="1" max="5" step="0.1"></div>
+              <div class="field-block"><label>Teaching Hours/Week</label><input class="pred-input" id="pHrs"
+                  type="number" value="16" min="0"></div>
+              <div class="field-block"><label>Student Feedback (1-5)</label><input class="pred-input" id="pFeed"
+                  type="number" value="3.5" min="1" max="5" step="0.1"></div>
+              <div class="field-block"><label>Experience (Years)</label><input class="pred-input" id="pExp"
+                  type="number" value="10" min="0"></div>
+            </div>
+            <button onclick="runPredict()"
+              style="width:100%;margin-top:16px;padding:11px;background:#1a56db;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">🤖
+              Predict Performance</button>
+          </div>
+          <div class="chart-card" id="predResult" style="display:flex;align-items:center;justify-content:center">
+            <div style="text-align:center;color:#a0aab4">
+              <div style="font-size:42px;margin-bottom:10px">🤖</div>
+              <div style="font-size:13px">Enter metrics and click Predict</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FACULTY DETAIL MODAL -->
+  <div class="modal" id="detailModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#1a2332" id="modalName"></div>
+          <div style="font-size:12px;color:#6b7a8d;margin-top:3px" id="modalMeta"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- REJECT REMARK MODAL -->
+  <div class="remark-modal" id="remarkModal">
+    <div class="remark-box">
+      <h3>❌ Reject Document</h3>
+      <p>Provide a reason so the faculty member can understand and resubmit.</p>
+      <textarea id="remarkText" placeholder="e.g. PDF is not readable, please upload a clear scan..."></textarea>
+      <div class="remark-footer">
+        <button class="btn btn-cancel" onclick="closeRemarkModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmReject()">Confirm Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILE VIEWER MODAL -->
+  <div class="file-modal" id="fileViewModal">
+    <div class="file-modal-box">
+      <div class="file-modal-header">
+        <div>
+          <div class="file-modal-title" id="fileModalTitle">Document</div>
+          <div class="file-modal-meta" id="fileModalMeta"></div>
+        </div>
+        <button class="modal-close" onclick="closeFileModal()">✕</button>
+      </div>
+      <div class="file-modal-body" id="fileViewContent">
+        <div style="text-align:center;color:#a0aab4">
+          <div class="file-spinner"></div>
+          <div style="font-size:13px">Loading file...</div>
+        </div>
+      </div>
+      <div class="file-modal-footer">
+        <a id="fileDownloadBtn" download
+          style="display:none;padding:9px 18px;background:#1a56db;color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none">📥
+          Download</a>
+        <button class="btn-sm btn-outline" onclick="closeFileModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const API = '';
+    let allFaculty = [], allPerformance = [], yearlyReport = {}, deptReport = {};
+    let pendingRejectDocId = null;
+
+    const chartOpts = {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#6b7a8d', boxWidth: 11, font: { size: 11, family: 'Inter' } } } },
+      scales: { y: { ticks: { color: '#6b7a8d', font: { size: 10 } }, grid: { color: '#f0f4f8' } }, x: { ticks: { color: '#6b7a8d', font: { size: 10 } }, grid: { display: false } } }
+    };
+    let charts = {};
+    function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+    // ── INIT ──────────────────────────────────────────────────────
+    async function init() {
+      const u = await fetch(`${API}/api/auth/user`, { credentials: 'include' }).then(r => r.json());
+      if (!u.user) return location.href = '/';
+      document.getElementById('userName').textContent = u.user.full_name || u.user.username;
+      fetch(`${API}/api/ml/model-info`).then(r => r.json()).then(d => {
+        if (d.loaded) document.getElementById('statAccuracy').textContent = (d.accuracy * 100).toFixed(1) + '%';
+      });
+      await Promise.all([loadStats(), loadFacultyList(), loadYearlyReport(), loadDeptReport()]);
+      populateYearFilter();
+      renderOverviewCharts();
+    }
+
+    async function loadStats() {
+      const d = await fetch(`${API}/api/admin/stats`, { credentials: 'include' }).then(r => r.json());
+      document.getElementById('statFaculty').textContent = d.total_faculty || 0;
+      document.getElementById('statAvgScore').textContent = d.avg_score || '0.00';
+      document.getElementById('statRecords').textContent = d.total_records || 0;
+    }
+    async function loadYearlyReport() {
+      const d = await fetch(`${API}/api/admin/yearly-report`, { credentials: 'include' }).then(r => r.json());
+      yearlyReport = d.report || {};
+    }
+    async function loadDeptReport() {
+      const d = await fetch(`${API}/api/admin/department-report`, { credentials: 'include' }).then(r => r.json());
+      deptReport = d.departments || {};
+    }
+
+    // ── FACULTY LIST ───────────────────────────────────────────────
+    async function loadFacultyList() {
+      const d = await fetch(`${API}/api/admin/faculty`, { credentials: 'include' }).then(r => r.json());
+      allFaculty = d.faculty || [];
+      renderFacultyTable(allFaculty);
+      populateSuggestSelect(allFaculty);
+      const depts = [...new Set(allFaculty.map(f => f.department).filter(Boolean))].sort();
+      ['deptFilter', 'deptFilter2'].forEach(id => {
+        const el = document.getElementById(id); if (!el) return;
+        el.innerHTML = '<option value="">All Departments</option>';
+        depts.forEach(d => el.innerHTML += `<option>${d}</option>`);
+      });
+    }
+
+    function renderFacultyTable(list) {
+      const tbody = document.getElementById('facultyTableBody');
+      if (!list.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#a0aab4;padding:28px">No faculty found</td></tr>'; return; }
+      tbody.innerHTML = list.map(f => `
+    <tr>
+      <td style="color:#1a56db;font-weight:600">${f.faculty_id || '—'}</td>
+      <td style="font-weight:500">${f.name || '—'}</td>
+      <td style="color:#6b7a8d">${f.department || '—'}</td>
+      <td style="color:#6b7a8d">${f.designation || '—'}</td>
+      <td>
+        <button class="action-btn" onclick="openFacultyDetail('${f.faculty_id}')">View Details</button>
+        <button class="action-btn" style="margin-left:6px" onclick="loadSuggestionsFor('${f.faculty_id}')">💡 Suggestions</button>
+        <button class="action-btn" style="margin-left:6px" onclick="viewFacultyDocs('${f.faculty_id}')">📂 Docs</button>
+      </td>
+    </tr>`).join('');
+    }
+
+    function filterFaculty(query) {
+      const dept = document.getElementById('deptFilter').value;
+      let list = allFaculty;
+      if (query) list = list.filter(f => (f.name + f.faculty_id + f.department).toLowerCase().includes(query.toLowerCase()));
+      if (dept) list = list.filter(f => f.department === dept);
+      renderFacultyTable(list);
+    }
+
+    // ── DOCUMENT VERIFICATION ──────────────────────────────────────
+    async function loadAdminDocs() {
+      const status = document.getElementById('docStatusFilter')?.value || '';
+      const docType = document.getElementById('docTypeFilter')?.value || '';
+      let url = `${API}/api/admin/documents?`;
+      if (status) url += `status=${status}&`;
+      if (docType) url += `doc_type=${docType}&`;
+
+      const d = await fetch(url, { credentials: 'include' }).then(r => r.json());
+      const docs = d.documents || [];
+      const stats = await fetch(`${API}/api/admin/documents/stats`, { credentials: 'include' }).then(r => r.json());
+      document.getElementById('vStatPending').textContent = stats.pending || 0;
+      document.getElementById('vStatVerified').textContent = stats.verified || 0;
+      document.getElementById('vStatRejected').textContent = stats.rejected || 0;
+
+      const tbody = document.getElementById('verifyTableBody');
+      if (!docs.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#a0aab4;padding:30px">No documents found</td></tr>'; return; }
+
+      const typeLabels = {
+        'publication': '📚 Publication', 'project': '🔬 Project',
+        'teaching_proof': '📝 Teaching', 'research_proof': '🔭 Research', 'admin_proof': '🏛️ Admin'
+      };
+
+      tbody.innerHTML = docs.map(doc => {
+        const statusCls = doc.verified_status === 'verified' ? 'status-verified' : doc.verified_status === 'rejected' ? 'status-rejected' : 'status-pending';
+        const detail = doc.journal_name
+          ? `${doc.journal_name}${doc.publication_date ? ', ' + doc.publication_date : ''}`
+          : doc.publication_date || doc.description || '—';
+        const detailShort = String(detail).length > 40 ? String(detail).slice(0, 40) + '...' : String(detail);
+        const safeTitle = (doc.title || '').replace(/'/g, "\\'");
+        const safeFile = (doc.file_name || 'document').replace(/'/g, "\\'");
+
+        // File button — only show if has_file is true
+        const fileBtn = doc.has_file
+          ? `<button class="action-btn" style="background:#e8f0fe;color:#1a56db;border-color:#c7deff;font-weight:600;white-space:nowrap"
+            onclick="viewDocFile(${doc.id},'${safeTitle}','${safeFile}')">📄 View File</button>`
+          : '<span style="color:#a0aab4;font-size:12px">No file</span>';
+
+        let actions = '';
+        if (doc.verified_status === 'pending') {
+          actions = `<div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="action-btn" style="background:#e6f9f0;color:#1a7a4a;border-color:#b2f0d4;font-weight:600" onclick="approveDoc(${doc.id})">✅ Approve</button>
+        <button class="action-btn" style="background:#fff0f0;color:#c0392b;border-color:#ffc7c7;font-weight:600" onclick="openRejectModal(${doc.id})">❌ Reject</button>
+      </div>`;
+        } else {
+          actions = `<span style="font-size:11px;color:#a0aab4;font-style:italic">${doc.admin_remark || 'Reviewed'}</span>`;
+        }
+
+        return `<tr>
+      <td style="font-weight:600">${doc.faculty_name || doc.faculty_id}</td>
+      <td style="color:#6b7a8d;font-size:12px">${doc.department || '—'}</td>
+      <td style="font-size:12px;white-space:nowrap">${typeLabels[doc.doc_type] || doc.doc_type}</td>
+      <td style="font-weight:500;max-width:160px;font-size:13px" title="${doc.title}">${String(doc.title).length > 28 ? String(doc.title).slice(0, 28) + '...' : doc.title}</td>
+      <td style="text-align:center">${doc.year}</td>
+      <td style="color:#6b7a8d;font-size:12px;max-width:140px" title="${detail}">${detailShort}</td>
+      <td>${fileBtn}</td>
+      <td><span class="${statusCls}">${doc.verified_status.charAt(0).toUpperCase() + doc.verified_status.slice(1)}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    async function approveDoc(docId) {
+      const r = await fetch(`${API}/api/admin/documents/${docId}/verify`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'verified', remark: 'Document verified by admin.' })
+      });
+      const d = await r.json();
+      if (d.success) { toast('✅ Document approved!', 'success'); loadAdminDocs(); }
+      else toast(d.error || 'Error approving', 'error');
+    }
+
+    function openRejectModal(docId) {
+      pendingRejectDocId = docId;
+      document.getElementById('remarkText').value = '';
+      document.getElementById('remarkText').style.borderColor = '#dde3ea';
+      document.getElementById('remarkModal').classList.add('show');
+    }
+
+    function closeRemarkModal() {
+      document.getElementById('remarkModal').classList.remove('show');
+      pendingRejectDocId = null;
+    }
+
+    async function confirmReject() {
+      const remark = document.getElementById('remarkText').value.trim();
+      if (!remark) { document.getElementById('remarkText').style.borderColor = '#e53e3e'; return; }
+      const r = await fetch(`${API}/api/admin/documents/${pendingRejectDocId}/verify`, {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'rejected', remark })
+      });
+      const d = await r.json();
+      closeRemarkModal();
+      if (d.success) { toast('Document rejected with remark.', 'error'); loadAdminDocs(); }
+      else toast(d.error || 'Error rejecting', 'error');
+    }
+
+    function viewFacultyDocs(fid) {
+      showPage('verify');
+      loadAdminDocs();
+    }
+
+    // ── FILE VIEWER ────────────────────────────────────────────────
+    async function viewDocFile(docId, title, fileName) {
+      document.getElementById('fileModalTitle').textContent = title || 'Document';
+      document.getElementById('fileModalMeta').textContent = fileName || '';
+      document.getElementById('fileDownloadBtn').style.display = 'none';
+      document.getElementById('fileViewContent').innerHTML =
+        `<div style="text-align:center;color:#6b7a8d">
+       <div class="file-spinner"></div>
+       <div style="font-size:13px;margin-top:4px">Loading file...</div>
+     </div>`;
+      document.getElementById('fileViewModal').classList.add('show');
+
+      try {
+        const d = await fetch(`${API}/api/documents/${docId}/file`, { credentials: 'include' }).then(r => r.json());
+        if (d.error) {
+          document.getElementById('fileViewContent').innerHTML =
+            `<div style="text-align:center;color:#e53e3e;padding:40px">
+           <div style="font-size:36px;margin-bottom:10px">❌</div>
+           <div style="font-size:14px">${d.error}</div>
+         </div>`;
+          return;
+        }
+
+        const dataUrl = `data:${d.file_type};base64,${d.file_data}`;
+        const isImage = d.file_type && d.file_type.startsWith('image/');
+        const isPDF = d.file_type === 'application/pdf' || (fileName || '').toLowerCase().endsWith('.pdf');
+
+        // Setup download button
+        const dlBtn = document.getElementById('fileDownloadBtn');
+        dlBtn.href = dataUrl;
+        dlBtn.download = fileName || 'document';
+        dlBtn.style.display = 'inline-block';
+
+        if (isImage) {
+          document.getElementById('fileViewContent').innerHTML =
+            `<img src="${dataUrl}" alt="${title}" style="max-width:100%;max-height:70vh;border-radius:8px;border:1px solid #dde3ea;object-fit:contain">`;
+        } else if (isPDF) {
+          document.getElementById('fileViewContent').innerHTML =
+            `<iframe src="${dataUrl}" style="width:100%;height:70vh;border:none;border-radius:8px"></iframe>`;
+        } else {
+          document.getElementById('fileViewContent').innerHTML =
+            `<div style="text-align:center;padding:40px;color:#1a2332">
+           <div style="font-size:52px;margin-bottom:14px">📄</div>
+           <div style="font-size:15px;font-weight:600;margin-bottom:8px">${fileName || 'document'}</div>
+           <div style="font-size:13px;color:#6b7a8d">Click Download to view this file.</div>
+         </div>`;
+        }
+      } catch (e) {
+        document.getElementById('fileViewContent').innerHTML =
+          `<div style="text-align:center;color:#e53e3e;padding:40px">
+         <div style="font-size:36px;margin-bottom:10px">⚠️</div>
+         <div style="font-size:14px">Failed to load file. Please try again.</div>
+       </div>`;
+      }
+    }
+
+    function closeFileModal() {
+      document.getElementById('fileViewModal').classList.remove('show');
+      document.getElementById('fileViewContent').innerHTML = '';
+      document.getElementById('fileDownloadBtn').style.display = 'none';
+    }
+
+    // ── PERFORMANCE TABLE ─────────────────────────────────────────
+    async function loadPerformanceTable() {
+      const year = document.getElementById('yearFilter')?.value;
+      const dept = document.getElementById('deptFilter2')?.value;
+      let url = `${API}/api/admin/performance?`;
+      if (year) url += `year=${year}&`;
+      if (dept) url += `department=${encodeURIComponent(dept)}&`;
+      const d = await fetch(url, { credentials: 'include' }).then(r => r.json());
+      allPerformance = d.performance || [];
+      renderPerformanceTable(allPerformance);
+    }
+
+    function renderPerformanceTable(list) {
+      const tbody = document.getElementById('perfTableBody');
+      if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#a0aab4;padding:28px">No data</td></tr>'; return; }
+      tbody.innerHTML = list.map(p => {
+        const cat = p.performance_category || 'Unknown';
+        const cls = cat.startsWith('Need') ? 'perf-bad' : (cat === 'Excellent' || cat === 'Good') ? 'perf-good' : 'perf-avg';
+        return `<tr>
+      <td style="font-weight:500">${p.name || p.faculty_id}</td>
+      <td style="color:#6b7a8d">${p.department || '—'}</td>
+      <td>${p.year || '—'}</td>
+      <td style="color:#1a56db;font-weight:600">${p.overall_score || '—'}</td>
+      <td>${p.teaching_rating || '—'}</td>
+      <td>${p.research_score || '—'}</td>
+      <td>${p.administration_score || '—'}</td>
+      <td><span class="perf-badge ${cls}">${cat}</span></td>
+    </tr>`;
+      }).join('');
+    }
+
+    function exportCSV() {
+      if (!allPerformance.length) return toast('No data to export', 'error');
+      const headers = ['Name', 'Department', 'Year', 'Overall Score', 'Teaching', 'Research', 'Admin', 'Category'];
+      const rows = allPerformance.map(p => [p.name || p.faculty_id, p.department, p.year, p.overall_score, p.teaching_rating, p.research_score, p.administration_score, p.performance_category]);
+      const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = 'data:text/csv,' + encodeURIComponent(csv);
+      a.download = 'faculty_performance.csv';
+      a.click();
+      toast('CSV exported!', 'success');
+    }
+
+    // ── SUGGESTIONS ───────────────────────────────────────────────
+    function populateSuggestSelect(faculty) {
+      const sel = document.getElementById('suggestFacSelect');
+      faculty.forEach(f => sel.innerHTML += `<option value="${f.faculty_id}">${f.name} (${f.department})</option>`);
+    }
+
+    async function loadSuggestions() {
+      const fid = document.getElementById('suggestFacSelect').value;
+      if (fid) await loadSuggestionsFor(fid);
+    }
+
+    async function loadSuggestionsFor(fid) {
+      if (fid) { showPage('suggestions'); document.getElementById('suggestFacSelect').value = fid; }
+      fid = fid || document.getElementById('suggestFacSelect').value;
+      if (!fid) return;
+      const d = await fetch(`${API}/api/faculty/suggestions/${fid}`, { credentials: 'include' }).then(r => r.json());
+      renderSuggestions(d);
+    }
+
+    function renderSuggestions(d) {
+      const el = document.getElementById('suggestResult');
+      if (!d.year_analyzed) { el.innerHTML = '<div style="color:#a0aab4;text-align:center;padding:40px">No performance data available</div>'; return; }
+      const pc = p => p?.toLowerCase() === 'high' ? 'high' : p?.toLowerCase() === 'medium' ? 'medium' : 'low';
+      const pcolor = { High: '#e53e3e', Medium: '#d97706', Low: '#1a56db' };
+      let html = `<div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap">
+    <div class="stat-card" style="--c:#1a7a4a;flex:1;min-width:140px"><div class="icon">⭐</div><div class="value">${d.overall_score || '—'}</div><div class="label">Overall Score</div></div>
+    <div class="stat-card" style="--c:#1a56db;flex:1;min-width:140px"><div class="icon">🏆</div><div class="value" style="font-size:16px">${d.performance_category || '—'}</div><div class="label">Category (${d.year_analyzed})</div></div>
+    <div class="stat-card" style="--c:#d97706;flex:1;min-width:140px"><div class="icon">💡</div><div class="value">${d.suggestions?.length || 0}</div><div class="label">Suggestions</div></div>
+    <div class="stat-card" style="--c:#1a7a4a;flex:1;min-width:140px"><div class="icon">✅</div><div class="value">${d.strengths?.length || 0}</div><div class="label">Strengths</div></div>
+  </div>`;
+      if (d.strengths?.length) html += `<div class="section-header"><div class="section-title" style="color:#1a7a4a">✅ Strengths</div></div><div class="suggest-grid">` + d.strengths.map(s => `<div class="suggest-card strength"><div class="suggest-area" style="color:#1a7a4a">Strength</div><div class="suggest-issue">${s}</div></div>`).join('') + '</div>';
+      if (d.suggestions?.length) html += `<div class="section-header"><div class="section-title" style="color:#d97706">💡 Improvement Areas</div></div><div class="suggest-grid">` + d.suggestions.map(s => `<div class="suggest-card ${pc(s.priority)}"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div class="suggest-area" style="color:${pcolor[s.priority] || '#1a56db'}">${s.area}</div><span style="padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;background:#f0f4f8;color:${pcolor[s.priority] || '#1a56db'}">${s.priority}</span></div><div class="suggest-issue">⚠ ${s.issue}</div><div class="suggest-text">💡 ${s.suggestion}</div></div>`).join('') + '</div>';
+      if (d.missing_data?.length) html += `<div class="section-header"><div class="section-title" style="color:#6b7a8d">📭 Missing Information</div></div><div class="suggest-grid">` + d.missing_data.map(m => `<div class="suggest-card missing"><div class="suggest-area" style="color:#a0aab4">Missing</div><div class="suggest-issue">${m}</div><div class="suggest-text">Please update this information.</div></div>`).join('') + '</div>';
+      if (!d.suggestions?.length && !d.missing_data?.length) html += `<div style="text-align:center;padding:40px;color:#1a7a4a"><div style="font-size:42px">🎉</div><div style="font-size:16px;font-weight:600;margin-top:10px">Excellent work! No improvements needed.</div></div>`;
+      el.innerHTML = html;
+    }
+
+    // ── FACULTY DETAIL MODAL ───────────────────────────────────────
+    async function openFacultyDetail(fid) {
+      const d = await fetch(`${API}/api/admin/faculty/${fid}`, { credentials: 'include' }).then(r => r.json());
+      if (d.error) return toast(d.error, 'error');
+      const f = d.faculty, perfs = d.performance || [];
+      document.getElementById('modalName').textContent = f.name;
+      document.getElementById('modalMeta').textContent = `${f.designation || ''} · ${f.department || ''} · ID: ${f.faculty_id}`;
+      const years = perfs.map(p => p.year), scores = perfs.map(p => p.overall_score), teaching = perfs.map(p => p.teaching_rating), research = perfs.map(p => p.research_score);
+      document.getElementById('modalContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+      <div class="stat-card" style="--c:#1a7a4a"><div class="icon">⭐</div><div class="value">${scores.length ? Math.max(...scores).toFixed(1) : '—'}</div><div class="label">Best Score</div></div>
+      <div class="stat-card" style="--c:#1a56db"><div class="icon">📚</div><div class="value">${perfs.reduce((a, p) => a + (p.publications || 0), 0)}</div><div class="label">Publications</div></div>
+      <div class="stat-card" style="--c:#d97706"><div class="icon">📖</div><div class="value">${perfs.reduce((a, p) => a + (p.citations || 0), 0)}</div><div class="label">Citations</div></div>
+      <div class="stat-card" style="--c:#6b21a8"><div class="icon">👨‍🎓</div><div class="value">${perfs.reduce((a, p) => a + (p.students_mentored || 0), 0)}</div><div class="label">Mentored</div></div>
+    </div>
+    <div class="modal-charts">
+      <div class="chart-card"><div class="chart-title">Overall Score Trend</div><div class="chart-wrap"><canvas id="modalChart1"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Teaching vs Research</div><div class="chart-wrap"><canvas id="modalChart2"></canvas></div></div>
+    </div>`;
+      document.getElementById('detailModal').classList.add('show');
+      setTimeout(() => {
+        new Chart(document.getElementById('modalChart1'), { type: 'line', data: { labels: years, datasets: [{ label: 'Overall', data: scores, borderColor: '#1a56db', backgroundColor: 'rgba(26,86,219,0.07)', fill: true, tension: .3, pointRadius: 4 }] }, options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 5 } } } });
+        new Chart(document.getElementById('modalChart2'), { type: 'bar', data: { labels: years, datasets: [{ label: 'Teaching', data: teaching, backgroundColor: 'rgba(26,86,219,0.7)', borderRadius: 4 }, { label: 'Research', data: research, backgroundColor: 'rgba(26,122,74,0.7)', borderRadius: 4 }] }, options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 5 } } } });
+      }, 50);
+    }
+
+    function closeModal() { document.getElementById('detailModal').classList.remove('show'); }
+
+    // ── CHARTS ─────────────────────────────────────────────────────
+    function renderOverviewCharts() {
+      const years = Object.keys(yearlyReport).sort();
+      destroyChart('trendChart');
+      charts.trendChart = new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: years, datasets: [{ label: 'Avg Score', data: years.map(y => yearlyReport[y].avg_overall), borderColor: '#1a56db', backgroundColor: 'rgba(26,86,219,0.07)', fill: true, tension: .3, pointRadius: 5 }] }, options: chartOpts });
+      if (years.length) {
+        const latest = yearlyReport[years[years.length - 1]], cats = latest.categories || {};
+        destroyChart('distChart');
+        charts.distChart = new Chart(document.getElementById('distChart'), { type: 'doughnut', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#1a56db', '#1a7a4a', '#d97706', '#e53e3e'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#6b7a8d', boxWidth: 10, font: { size: 11 } } } } } });
+      }
+      destroyChart('trChart');
+      charts.trChart = new Chart(document.getElementById('trChart'), { type: 'bar', data: { labels: years, datasets: [{ label: 'Teaching', data: years.map(y => yearlyReport[y].avg_teaching), backgroundColor: 'rgba(26,86,219,0.7)', borderRadius: 4 }, { label: 'Research', data: years.map(y => yearlyReport[y].avg_research), backgroundColor: 'rgba(26,122,74,0.7)', borderRadius: 4 }] }, options: chartOpts });
+      destroyChart('pubChart');
+      charts.pubChart = new Chart(document.getElementById('pubChart'), { type: 'bar', data: { labels: years, datasets: [{ label: 'Publications', data: years.map(y => yearlyReport[y].total_pubs), backgroundColor: 'rgba(217,119,6,0.7)', borderRadius: 4 }] }, options: chartOpts });
+      destroyChart('mentorChart');
+      charts.mentorChart = new Chart(document.getElementById('mentorChart'), { type: 'line', data: { labels: years, datasets: [{ label: 'Mentored', data: years.map(y => yearlyReport[y].total_mentored), borderColor: '#6b21a8', backgroundColor: 'rgba(107,33,168,0.07)', fill: true, tension: .3, pointRadius: 4 }] }, options: chartOpts });
+    }
+
+    function renderYearlyCharts(selectedYear) {
+      const years = Object.keys(yearlyReport).sort(), yr = yearlyReport[selectedYear];
+      destroyChart('yearBreakdownChart');
+      charts.yearBreakdownChart = new Chart(document.getElementById('yearBreakdownChart'), { type: 'bar', data: { labels: ['Overall', 'Teaching', 'Research', 'Admin'], datasets: [{ label: selectedYear, data: [yr.avg_overall, yr.avg_teaching, yr.avg_research, yr.avg_admin], backgroundColor: ['rgba(26,86,219,0.7)', 'rgba(26,122,74,0.7)', 'rgba(217,119,6,0.7)', 'rgba(107,33,168,0.7)'], borderRadius: 6 }] }, options: { ...chartOpts, indexAxis: 'y' } });
+      destroyChart('yearCatChart');
+      const cats = yr.categories || {};
+      charts.yearCatChart = new Chart(document.getElementById('yearCatChart'), { type: 'pie', data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#1a56db', '#1a7a4a', '#d97706', '#e53e3e'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#6b7a8d', boxWidth: 10, font: { size: 11 } } } } } });
+      destroyChart('allYearsChart');
+      charts.allYearsChart = new Chart(document.getElementById('allYearsChart'), {
+        type: 'line', data: {
+          labels: years, datasets: [
+            { label: 'Overall', data: years.map(y => yearlyReport[y].avg_overall), borderColor: '#1a56db', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 2 },
+            { label: 'Teaching', data: years.map(y => yearlyReport[y].avg_teaching), borderColor: '#1a7a4a', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 2 },
+            { label: 'Research', data: years.map(y => yearlyReport[y].avg_research), borderColor: '#d97706', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 2 },
+            { label: 'Admin', data: years.map(y => yearlyReport[y].avg_admin), borderColor: '#6b21a8', backgroundColor: 'transparent', tension: .3, pointRadius: 3, borderWidth: 2 }
+          ]
+        }, options: chartOpts
+      });
+      document.getElementById('yearStatsTable').innerHTML = `<div class="table-card"><div class="table-toolbar"><span style="font-size:14px;font-weight:600;color:#1a2332">Yearly Statistics</span></div>
+    <table><thead><tr><th>Year</th><th>Count</th><th>Avg Overall</th><th>Avg Teaching</th><th>Avg Research</th><th>Publications</th><th>Mentored</th></tr></thead>
+    <tbody>${years.map(y => { const r = yearlyReport[y]; return `<tr><td style="color:#1a56db;font-weight:600">${y}</td><td>${r.count}</td><td style="color:#1a7a4a;font-weight:600">${r.avg_overall}</td><td>${r.avg_teaching}</td><td>${r.avg_research}</td><td>${r.total_pubs}</td><td>${r.total_mentored}</td></tr>`; }).join('')}</tbody></table></div>`;
+    }
+
+    function renderDeptCharts() {
+      const depts = Object.keys(deptReport).sort();
+      destroyChart('deptChart');
+      charts.deptChart = new Chart(document.getElementById('deptChart'), {
+        type: 'bar', data: {
+          labels: depts.map(d => d.length > 18 ? d.slice(0, 18) + '…' : d), datasets: [
+            { label: 'Overall', data: depts.map(d => deptReport[d].avg_overall), backgroundColor: 'rgba(26,86,219,0.7)', borderRadius: 4 },
+            { label: 'Teaching', data: depts.map(d => deptReport[d].avg_teaching), backgroundColor: 'rgba(26,122,74,0.7)', borderRadius: 4 },
+            { label: 'Research', data: depts.map(d => deptReport[d].avg_research), backgroundColor: 'rgba(217,119,6,0.7)', borderRadius: 4 }
+          ]
+        }, options: chartOpts
+      });
+      document.getElementById('deptTableBody').innerHTML = depts.map(d => { const r = deptReport[d]; return `<tr><td style="font-weight:600">${d}</td><td>${r.count}</td><td style="color:#1a56db;font-weight:600">${r.avg_overall}</td><td>${r.avg_teaching}</td><td>${r.avg_research}</td><td>${r.total_pubs}</td></tr>`; }).join('');
+    }
+
+    function buildYearTabs() {
+      const years = Object.keys(yearlyReport).sort().reverse();
+      document.getElementById('yearTabs').innerHTML = years.map((y, i) => `<button class="year-tab ${i === 0 ? 'active' : ''}" onclick="selectYear('${y}',this)">${y}</button>`).join('');
+      if (years.length) { renderYearlyCharts(years[0]); document.getElementById('selectedYearLabel').textContent = years[0]; }
+    }
+
+    function selectYear(year, el) {
+      document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('selectedYearLabel').textContent = year;
+      renderYearlyCharts(year);
+    }
+
+    function populateYearFilter() {
+      const years = Object.keys(yearlyReport).sort().reverse();
+      const el = document.getElementById('yearFilter'); if (!el) return;
+      el.innerHTML = '<option value="">All Years</option>';
+      years.forEach(y => el.innerHTML += `<option>${y}</option>`);
+    }
+
+    // ── PAGE ROUTING ───────────────────────────────────────────────
+    const pageTitles = {
+      overview: ['Overview', 'Faculty Performance Dashboard'],
+      verify: ['Verify Documents', 'Review and approve faculty proof documents'],
+      yearly: ['Yearly Reports', 'Year-wise analytics and trends'],
+      departments: ['Departments', 'Performance by department'],
+      faculty: ['Faculty List', 'Manage faculty members'],
+      performance: ['Performance Data', 'All performance records'],
+      suggestions: ['AI Suggestions', 'Improvement recommendations'],
+      predict: ['ML Predictor', 'Predict faculty performance']
+    };
+
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const cap = name.charAt(0).toUpperCase() + name.slice(1);
+      document.getElementById('page' + cap)?.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(n => { if (n.textContent.toLowerCase().includes(name.slice(0, 5).toLowerCase())) n.classList.add('active'); });
+      const [title, sub] = pageTitles[name] || [name, ''];
+      document.getElementById('pageTitle').textContent = title;
+      document.getElementById('pageSubtitle').textContent = sub;
+      if (name === 'yearly') buildYearTabs();
+      if (name === 'departments') renderDeptCharts();
+      if (name === 'performance') loadPerformanceTable();
+      if (name === 'verify') loadAdminDocs();
+    }
+
+    // ── ML PREDICT ─────────────────────────────────────────────────
+    async function runPredict() {
+      const body = {
+        publications: +document.getElementById('pPub').value, citations: +document.getElementById('pCit').value,
+        projects_completed: +document.getElementById('pProj').value, students_mentored: +document.getElementById('pMent').value,
+        teaching_rating: +document.getElementById('pTeach').value, research_score: +document.getElementById('pRes').value,
+        administration_score: +document.getElementById('pAdm').value, teaching_hours: +document.getElementById('pHrs').value,
+        student_feedback: +document.getElementById('pFeed').value, experience_years: +document.getElementById('pExp').value
+      };
+      const d = await fetch(`${API}/api/ml/predict`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+      if (d.error) return toast(d.error, 'error');
+      const colorMap = { Excellent: '#1a7a4a', Good: '#1a56db', Average: '#d97706', 'Needs Improvement': '#e53e3e' };
+      const c = colorMap[d.prediction] || '#1a56db';
+      document.getElementById('predResult').innerHTML = `
+    <div style="text-align:center;width:100%">
+      <div style="font-size:12px;color:#6b7a8d;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Predicted Category</div>
+      <div style="font-size:28px;font-weight:700;color:${c};margin-bottom:4px">${d.prediction}</div>
+      <div style="font-size:13px;color:#6b7a8d;margin-bottom:20px">Confidence: <strong style="color:${c}">${d.confidence}%</strong></div>
+      ${Object.entries(d.probabilities).map(([cls, pct]) => `
+        <div style="margin-bottom:10px;text-align:left">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span style="color:#374151">${cls}</span><span style="color:${colorMap[cls] || '#1a56db'};font-weight:600">${pct}%</span>
+          </div>
+          <div style="height:6px;background:#f0f4f8;border-radius:3px">
+            <div style="height:100%;width:${pct}%;background:${colorMap[cls] || '#1a56db'};border-radius:3px"></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+    }
+
+    // ── UTILITIES ──────────────────────────────────────────────────
+    function toast(msg, type = 'success') { const el = document.getElementById('toast'); el.textContent = msg; el.className = `show ${type}`; setTimeout(() => el.classList.remove('show'), 3500); }
+    async function logout() { await fetch(`${API}/api/auth/logout`, { method: 'POST', credentials: 'include' }); location.href = '/'; }
+
+    document.getElementById('detailModal').addEventListener('click', e => { if (e.target === document.getElementById('detailModal')) closeModal(); });
+    document.getElementById('remarkModal').addEventListener('click', e => { if (e.target === document.getElementById('remarkModal')) closeRemarkModal(); });
+    document.getElementById('fileViewModal').addEventListener('click', e => { if (e.target === document.getElementById('fileViewModal')) closeFileModal(); });
+
+    init();
+  </script>
+</body>
+
+</html>
