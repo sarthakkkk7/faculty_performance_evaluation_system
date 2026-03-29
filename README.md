@@ -33,8 +33,8 @@ faculty_system/
     ├── index.html
     ├── admin_dashboard.html
     └── faculty_dashboard.html
-
----
+```
+--- 
 
 ## 🚀 Quick Setup
 
@@ -50,3 +50,76 @@ faculty_system/
 ```bash
 cp .env.example .env
 # Edit .env with your Supabase URL and key
+```
+
+### 4. Install & Run
+```bash
+pip install -r requirements.txt
+python train_ml_model.py
+python import_data.py
+python app.py
+```
+Access at: http://localhost:5000
+---
+
+## 🔐 Default Credentials
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | admin | admin123 |
+| Faculty | faculty1 | faculty123 |
+
+---
+
+## 📝 Registration
+
+* Click "Register here"
+* Fill in the details and submit
+* Enter the OTP (emailed or shown in the terminal)
+* Login with your new credentials
+
+---
+
+## 👨‍💼 Admin Features
+
+* **Overview:** Key metrics, yearly trends, distribution charts
+* **Yearly Reports:** Year-wise score breakdowns
+* **Departments:** Cross-department comparisons
+* **Faculty List:** Search, filter, view details, AI suggestions
+* **Performance Data:** Filter, export to CSV
+* **ML Predictor:** Predict performance category from metrics
+
+---
+
+## 👩‍🏫 Faculty Features
+
+* Personal dashboard with career stats
+* Score trend charts and radar chart
+* Year-by-year performance records
+* Personal AI suggestions
+
+---
+
+## ❓ Common Issues
+
+| Issue | Solution |
+|-------|----------|
+| Missing .env variables | Copy .env.example to .env and fill in the values |
+| ML model not loaded | Run `python train_ml_model.py` |
+| No data | Run `python import_data.py` |
+| OTP not received | Check terminal console (dev mode) or configure SMTP |
+
+---
+
+## 🏗️ Tech Stack
+
+* **Backend:** Python Flask
+* **Database:** Supabase (PostgreSQL)
+* **ML:** Random Forest (93% accuracy)
+* **Charts:** Chart.js
+* **Auth:** Session-based + OTP
+
+---
+
+Happy evaluating! 🎓
+
